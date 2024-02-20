@@ -1,0 +1,10 @@
+{
+  "name": "client",
+  "tree": {
+    "$path": "client",
+    "LoadLibrary": {
+      "$className": "Folder",
+      "$path": "LoadLibrary"
+    }
+  }
+}

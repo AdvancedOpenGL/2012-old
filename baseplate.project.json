@@ -1,0 +1,19 @@
+{
+    "name": "baseplate",
+    "tree": {
+        "$path": "default.project.json",
+        "Workspace": {
+            "$className": "Workspace",
+            "Baseplate": {
+                "$className": "Part",
+                "$properties": {
+                    "Size": [512,0.4,512],
+                    "Position": [0,0,0],
+                    "BrickColor": {"BrickColor": 26},
+                    "Anchored": true,
+                    "Locked": true
+                }
+            }
+        }
+    }
+}

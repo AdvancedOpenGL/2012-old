@@ -1,0 +1,28 @@
+{
+    "name": "Place1",
+    "tree": {
+        "$className": "DataModel",
+        "$ignoreUnknownInstances": true,
+        "ReplicatedFirst":{
+            "$className": "ReplicatedFirst",
+            "$ignoreUnknownInstances": true,
+            "client": {
+                "$path":"client.project.json"
+            }
+        },
+        "StarterPlayer": {
+            "$className": "StarterPlayer",
+            "$ignoreUnknownInstances": true,
+            "$properties": {
+                "GameSettingsAvatar": "R6"
+            }
+        },
+        "TextChatService": {
+            "$className": "TextChatService",
+            "$ignoreUnknownInstances": true,
+            "$properties": {
+                "ChatVersion": "TextChatService"
+            }
+        }
+    }
+  }
