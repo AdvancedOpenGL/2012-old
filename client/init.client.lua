@@ -59,6 +59,9 @@ shiftLock.Image = "rbxassetid://16441982688"
 shiftLock.HoverImage = "rbxassetid://16441982601"
 shiftLock.Visible = false
 
+
+_G.CoreGui = CoreGui
+_G.RobloxGui = RobloxGui
 CoreGui.Parent = game.Players.LocalPlayer.PlayerGui
 --global functions
 function _G.LoadLibrary(lib)
@@ -102,7 +105,7 @@ local modules = {
 	"Animate",
 	"Sound",
 	"HealthScript v3.1",
-	"MovementScript",
+	"ControlScript",
 	"CameraScript"
 }
 for i,v in pairs(CoreScripts) do

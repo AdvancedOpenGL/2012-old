@@ -238,11 +238,11 @@ local function characterAdded(c : Model)
 	e[8] = Humanoid.Seated:Connect(onSeated)
 
 	-- main program
-
+	local current = tick()
 	local runService = game:GetService("RunService");
 	e[9] = runService.RenderStepped:Connect(function()
 		if c and c.Parent then
-			move(tick())
+			move(tick()-current)
 		else
 			disconnectEvents()
 			return

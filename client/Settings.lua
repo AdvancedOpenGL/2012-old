@@ -1086,7 +1086,7 @@ return function()
                     end
                 end
             end)
-            task.spawn(function()
+            --[[task.spawn(function()
                 local function getFirstPerson()
                     if (game.Players.LocalPlayer.Character.Head.CFrame.p - workspace.CurrentCamera.CFrame.p).magnitude < 1.5 then
                         return true
@@ -1104,7 +1104,7 @@ return function()
                         mouseLockLabel.HoverImage = "rbxassetid://16441982601"
                     end
                 end)
-            end)
+            end)]]
         end
         cameraDropDown.Name = "CameraField"
         cameraDropDown.ZIndex = baseZIndex + 4
