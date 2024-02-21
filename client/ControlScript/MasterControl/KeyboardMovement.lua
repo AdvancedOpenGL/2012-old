@@ -20,6 +20,7 @@ end
 local LocalPlayer = Players.LocalPlayer
 local CachedHumanoid = nil
 local RenderSteppedCon = nil
+local jumpCon
 local TextFocusReleasedCn = nil
 
 local MasterControl = require(script.Parent)
@@ -125,7 +126,12 @@ function KeyboardMovement:Enable()
 	ContextActionService:BindActionToInputTypes("backwardMovement", moveBackwardFunc, false, Enum.PlayerActions.CharacterBackward)
 	ContextActionService:BindActionToInputTypes("leftMovement", moveLeftFunc, false, Enum.PlayerActions.CharacterLeft)
 	ContextActionService:BindActionToInputTypes("rightMovement", moveRightFunc, false, Enum.PlayerActions.CharacterRight)
-	ContextActionService:BindActionToInputTypes("jumpAction", jumpFunc, false, Enum.PlayerActions.CharacterJump)
+	--ContextActionService:BindActionToInputTypes("jumpAction", jumpFunc, false, Enum.PlayerActions.CharacterJump, Enum.KeyCode.Space)
+	jumpCon = game:GetService("UserInputService").InputBegan:Connect(function(key, sank)
+		if key.KeyCode == Enum.KeyCode.Space and not sank then
+			MasterControl:RequestJump()
+		end
+	end)
 	ContextActionService:BindActionToInputTypes("jumpFromSeat", jumpFromSeat, false, Enum.KeyCode.Backspace)
 	-- TODO: make sure we check key state before binding to check if key is already down
 	
@@ -171,6 +177,11 @@ function KeyboardMovement:Disable()
 		TextFocusReleasedCn = nil
 	end
 	
+	if jumpCon then
+		jumpCon:Disconnect()
+		jumpCon = nil
+	end
+
 	MasterControl:AddToPlayerMovement(-currentMoveVector)
 	currentMoveVector = Vector3.new(0,0,0)
 end
