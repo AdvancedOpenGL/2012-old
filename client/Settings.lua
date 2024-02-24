@@ -847,9 +847,9 @@ return function()
                 else
                     graphicsLevel.Value = math.floor((21/(21 - 1)) * GraphicsQualityLevels)
                 end
-                settings().Rendering.QualityLevel = math.min(21 - 1, math.max(1,graphicsLevel.Value * (21 - 1)))
+                --settings().Rendering.QualityLevel = math.min(21 - 1, math.max(1,graphicsLevel.Value * (21 - 1)))
                 if not explicitLevel then
-                    pcall(function() UserSettings().GameSettings.SavedQualityLevel = graphicsLevel.Value end)
+                    --pcall(function() UserSettings().GameSettings.SavedQualityLevel = graphicsLevel.Value end)
                 end
                 graphicsSetter.Text = tostring(graphicsLevel.Value)
             end

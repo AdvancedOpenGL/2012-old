@@ -92,28 +92,6 @@ function _G.SetGlobalSizeOffsetPixel(x,y)
 		task.spawn(v,_G.Offset)
 	end
 end
-local surfaces = {
-	"Studs" = "rbxassetid://16481982954",
-	"Inlet" = "rbxassetid://16481983083",
-	"Universal" = "rbxassetid://16481982853",
-	"Weld" = "rbxassetid://16481982743",
-	"Glue" = "rbxassetid://16482116325"
-}
-local surfaces_truss = {
-	"Studs" = "rbxassetid://16482119107",
-	"Inlet" = "rbxassetid://16482119205",
-	"Universal" = "rbxassetid://16482119026",
-	"Weld" = "rbxassetid://16482118807",
-	"Glue" = "rbxassetid://16482119431"
-}
-local function addStuds(part,surface)
-	
-end
-local function descendantAdded(part)
-	if part and part:IsA("BasePart") then
-
-	end
-end
 
 --wait for the coregui
 local CoreScripts = {
@@ -159,10 +137,5 @@ task.spawn(function()
 	images[12] = _G.PreloadImage("rbxassetid://16440262343","rbxassetid://16440262343") --RecordStop
 	images[13] = _G.PreloadImage("rbxassetid://16441982483","rbxassetid://16441982300") --mouselock_on
 	images[14] = _G.PreloadImage("rbxassetid://16441982688","rbxassetid://16441982601") --mouselock_off
-	images[15] = _G.PreloadImage(surfaces["Studs"],surfaces_truss["Studs"]) --studs
-	images[16] = _G.PreloadImage(surfaces["Inlet"],surfaces_truss["Inlet"]) --inlet
-	images[17] = _G.PreloadImage(surfaces["Universal"],surfaces_truss["Universal"]) --universal
-	images[18] = _G.PreloadImage(surfaces["Weld"],surfaces_truss["Weld"]) --weld
-	images[19] = _G.PreloadImage(surfaces["Glue"],surfaces_truss["Glue"]) --glue
 	content:PreloadAsync(images)
 end)

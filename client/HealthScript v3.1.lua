@@ -74,7 +74,7 @@ function CreateGUI()
 end
 
 function UpdateGUI(health)
-	tray = frame.tray
+	local tray = frame.tray
 	local width = (health / humanoid.MaxHealth) * maxWidth
 	local height = 0.83
 	local lastX = tray.bar.Position.X.Scale
