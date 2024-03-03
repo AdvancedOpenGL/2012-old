@@ -1988,10 +1988,10 @@ return function()
         end)
     
     --Spawn a thread for Chat Bar
-    local canChat = game:GetService("Chat"):CanUserChatAsync(game.Players.LocalPlayer.UserId)
+    --local canChat = game:GetService("Chat"):CanUserChatAsync(game.Players.LocalPlayer.UserId)
     local isChatBarSupported, coreGuiVersion = true, 2-- isChatBarSupported is for PC Lua chat, coreGuiVersion should be >=2 as well
     local isMacChat, version = true, 2
-    if canChat and version >= 2 then
+    if false  then--canChat and version >= 2 then
         delay(0,
             function()
                 waitForChild(game, "Players")

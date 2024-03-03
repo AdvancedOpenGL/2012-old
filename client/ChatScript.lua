@@ -493,7 +493,7 @@ return function()
 				for _, label in pairs(self.MessageQueue[i]) do 
 					local next = self.MessageQueue[i].Next
 					local previous = self.MessageQueue[i].Previous 
-					if label and label:IsA('TextLabel') or label:IsA('TextButton') then 							
+					if label and type(label) == "userdata" and (label:IsA('TextLabel') or label:IsA('TextButton')) then 							
 						if value > 0 and previous and previous['Message'] then 						
 							label.Position = previous['Message'].Position
 						elseif value < 1 and next['Message'] then 
@@ -657,7 +657,7 @@ return function()
 	-- Non touch devices, create the bottom chat bar 
 	function Chat:CreateChatBar()
 		-- okay now we do 
-		local status, result = pcall(function() return GuiService.UseLuaChat end)	
+		local status, result = true,true
 		if status and result then 	
 			self.ClickToChatButton = Gui.Create'TextButton'
 			{
@@ -691,14 +691,20 @@ return function()
 			};	
 
 			-- Engine has code to offset the entire world, so if we do it by -20 pixels nothing gets in our chat's way
-			GuiService:SetGlobalSizeOffsetPixel(0, -20)
+			_G.SetGlobalSizeOffsetPixel(0, -20)
 			-- CHatHotKey is '/'
-			GuiService:AddSpecialKey(Enum.SpecialKey.ChatHotkey)
+			--[[GuiService:AddSpecialKey(Enum.SpecialKey.ChatHotkey)
 			GuiService.SpecialKeyPressed:connect(function(key) 
 				if key == Enum.SpecialKey.ChatHotkey then 
 					Chat:FocusOnChatBar()
 				end 
-			end)	
+			end)	]]
+			game:GetService("UserInputService").InputBegan:Connect(function(key,sank)
+				if key.KeyCode == Enum.KeyCode.Slash and not sank then
+					task.wait()
+					Chat:FocusOnChatBar()
+				end
+			end)
 
 			self.ClickToChatButton.MouseButton1Click:connect(function()
 				Chat:FocusOnChatBar()
@@ -915,7 +921,7 @@ return function()
 			if Chat:IsTouchDevice() then 
 				Chat:CreateTouchButton() 						
 			else 
-				--Chat:CreateChatBar()
+				Chat:CreateChatBar()
 				--Chat:CreateSafeChatGui()
 			end 
 
@@ -932,7 +938,8 @@ return function()
 					end 
 					if enterPressed and self.ChatBar.Text ~= "" then 
 						if PlayersService.ClassicChat then  						
-							pcall(function() PlayersService:Chat(self.ChatBar.Text) end)						
+							--pcall(function() PlayersService:Chat(self.ChatBar.Text) end)	
+							tcs.TextChannels.RBXGeneral:SendAsync(self.ChatBar.Text)					
 						elseif PlayersService.BubbleChat then 
 							-- do nothing 
 						end 					
@@ -1204,4 +1211,4 @@ return function()
     task.spawn(function()
 		tcs:WaitForChild("BubbleChatConfiguration").Enabled = false
 	end)
-end
+end 
