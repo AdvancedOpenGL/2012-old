@@ -810,12 +810,14 @@ return function()
 				return ""
 			elseif membershipType == Enum.MembershipType.BuildersClub then
 				return "rbxasset://textures/ui/TinyBcIcon.png"
+			elseif membershipType == Enum.MembershipType.Premium then
+				return "rbxasset://textures/ui/TinyBcIcon.png"
 			elseif membershipType == Enum.MembershipType.TurboBuildersClub then
 				return "rbxasset://textures/ui/TinyTbcIcon.png"
 			elseif membershipType == Enum.MembershipType.OutrageousBuildersClub then
 				return "rbxasset://textures/ui/TinyObcIcon.png"
 			else
-				warn("Uknown membershipType" .. membershipType)
+				warn("Unknown membershipType", membershipType)
 				return ""
 			end	
 		end
