@@ -1,5 +1,8 @@
+--!native
+--!optimize 2
+--!strict
+--Made by AdvancedOpenGL
 game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All,false)
---game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Chat,true)
 local RunService = game:GetService("RunService")
 _G.playerReady = false
 game.Players.LocalPlayer:WaitForChild("PlayerScripts").DescendantAdded:Connect(function(inst)
@@ -61,23 +64,31 @@ shiftLock.Visible = false
 
 
 _G.CoreGui = CoreGui
+local preload = Instance.new("ScreenGui")
+preload.ResetOnSpawn = false
+preload.IgnoreGuiInset = true
+preload.Name = "preload"
+preload.Parent = CoreGui
 _G.RobloxGui = RobloxGui
 CoreGui.Parent = game.Players.LocalPlayer.PlayerGui
 --global functions
 function _G.LoadLibrary(lib)
 	return require(script.LoadLibrary:WaitForChild(lib))
 end
+local count = 0
 function _G.PreloadImage(img,hover)
 	local hidden = Instance.new("ImageButton")
-	hidden.Position = UDim2.new(2,0,2,0)
+	hidden.Position = UDim2.fromOffset(count*1,0)
 	hidden.Image = img
 	hidden.HoverImage = hover
 	hidden.Selectable = false
-	hidden.Name = "preload"
+	hidden.Name = "Image "..count
+	hidden.ImageTransparency = 0.95
+	hidden.Size = UDim2.fromOffset(1,1)
 	hidden.Active = false
 	hidden.BackgroundTransparency = 1
-	hidden.Parent = CoreGui
-	
+	hidden.Parent = preload
+	count +=1
 	return hidden
 end
 local functions = {}
@@ -137,5 +148,7 @@ task.spawn(function()
 	images[12] = _G.PreloadImage("rbxassetid://16440262343","rbxassetid://16440262343") --RecordStop
 	images[13] = _G.PreloadImage("rbxassetid://16441982483","rbxassetid://16441982300") --mouselock_on
 	images[14] = _G.PreloadImage("rbxassetid://16441982688","rbxassetid://16441982601") --mouselock_off
+	images[15] = _G.PreloadImage("rbxassetid://17759754421","rbxassetid://17759754509")
+	images[16] = _G.PreloadImage("rbxassetid://17759754592","rbxassetid://17759754592")
 	content:PreloadAsync(images)
 end)

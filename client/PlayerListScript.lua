@@ -805,17 +805,20 @@ return function()
 			end
 		end
 
+		local TinyBcIcon = "rbxassetid://17759754421"
+		local TinyTbcIcon = "rbxassetid://17759754592"
+		local TinyObcIcon = "rbxassetid://17759754509"
 		local function getMembershipTypeIcon(membershipType)
 			if membershipType == Enum.MembershipType.None then
 				return ""
 			elseif membershipType == Enum.MembershipType.BuildersClub then
-				return "rbxasset://textures/ui/TinyBcIcon.png"
-			elseif membershipType == Enum.MembershipType.Premium then
-				return "rbxasset://textures/ui/TinyBcIcon.png"
+				return TinyBcIcon
 			elseif membershipType == Enum.MembershipType.TurboBuildersClub then
-				return "rbxasset://textures/ui/TinyTbcIcon.png"
+				return TinyTbcIcon
 			elseif membershipType == Enum.MembershipType.OutrageousBuildersClub then
-				return "rbxasset://textures/ui/TinyObcIcon.png"
+				return TinyObcIcon
+			elseif membershipType == Enum.MembershipType.Premium then
+				return TinyBcIcon
 			else
 				warn("Unknown membershipType", membershipType)
 				return ""
