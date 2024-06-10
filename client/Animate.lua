@@ -1,10 +1,13 @@
 --!native
 --!optimize 2
+local wait = task.wait
+local spawn = task.spawn
+local delay = task.delay
 function waitForChild(parent, childName)
 	local child = parent:FindFirstChild(childName)
 	if child then return child end
 	while true do
-		child = parent.ChildAdded:wait()
+		child = parent.ChildAdded:Wait()
 		if child.Name==childName then return child end
 	end
 end
@@ -13,7 +16,7 @@ local function characterAdded(c : Model)
 		if inst.Name == "Animate" then
 			task.wait()
 			inst:Destroy()
-			local a = c:WaitForChild("Humanoid")
+			local a = c:WaitForChild("Humanoid") :: Humanoid
 			for i,v in pairs(a:GetPlayingAnimationTracks()) do
 				v:Stop()
 			end
@@ -26,21 +29,21 @@ local function characterAdded(c : Model)
 
 	-- declarations
 
-	local Figure = c
-	local Torso = waitForChild(Figure, "Torso")
-	local RightShoulder = waitForChild(Torso, "Right Shoulder")
-	local LeftShoulder = waitForChild(Torso, "Left Shoulder")
-	local RightHip = waitForChild(Torso, "Right Hip")
-	local LeftHip = waitForChild(Torso, "Left Hip")
-	local Neck = waitForChild(Torso, "Neck")
-	local Humanoid = waitForChild(Figure, "Humanoid")
+	local Figure = c :: Model
+	local Torso = waitForChild(Figure, "Torso") :: Part
+	local RightShoulder = waitForChild(Torso, "Right Shoulder") :: Motor6D
+	local LeftShoulder = waitForChild(Torso, "Left Shoulder") :: Motor6D
+	local RightHip = waitForChild(Torso, "Right Hip") :: Motor6D
+	local LeftHip = waitForChild(Torso, "Left Hip") :: Motor6D
+	local Neck = waitForChild(Torso, "Neck") :: Motor6D
+	local Humanoid = waitForChild(Figure, "Humanoid") :: Humanoid
 	local pose = "Standing"
 	local toolAnim = "None"
 	local toolAnimTime = 0
 
 	-- functions
 
-	function onRunning(speed)
+	local function onRunning(speed)
 		if speed>0 then
 			pose = "Running"
 		else
@@ -48,35 +51,35 @@ local function characterAdded(c : Model)
 		end
 	end
 
-	function onDied()
+	local function onDied()
 		pose = "Dead"
 	end
 
-	function onJumping()
+	local function onJumping()
 		pose = "Jumping"
 	end
 
-	function onClimbing()
+	local function onClimbing()
 		pose = "Climbing"
 	end
 
-	function onGettingUp()
+	local function onGettingUp()
 		pose = "GettingUp"
 	end
 
-	function onFreeFall()
+	local function onFreeFall()
 		pose = "FreeFall"
 	end
 
-	function onFallingDown()
+	local function onFallingDown()
 		pose = "FallingDown"
 	end
 
-	function onSeated()
+	local function onSeated()
 		pose = "Seated"
 	end
 
-	function moveJump()
+	local function moveJump()
 		RightShoulder.MaxVelocity = 0.5
 		LeftShoulder.MaxVelocity = 0.5
 		RightShoulder.DesiredAngle = 3.14
@@ -88,7 +91,7 @@ local function characterAdded(c : Model)
 
 	-- same as jump for now
 
-	function moveFreeFall()
+	local function moveFreeFall()
 		RightShoulder.MaxVelocity = 0.5
 		LeftShoulder.MaxVelocity = 0.5
 		RightShoulder.DesiredAngle = 3.14
@@ -97,7 +100,7 @@ local function characterAdded(c : Model)
 		LeftHip.DesiredAngle = 0
 	end
 
-	function moveSit()
+	local function moveSit()
 		RightShoulder.MaxVelocity = 0.15
 		LeftShoulder.MaxVelocity = 0.15
 		RightShoulder.DesiredAngle = 3.14 /2
@@ -106,23 +109,23 @@ local function characterAdded(c : Model)
 		LeftHip.DesiredAngle = -3.14 /2
 	end
 
-	function getTool()	
+	local function getTool()	
 		for _, kid in ipairs(Figure:GetChildren()) do
-			if kid.className == "Tool" then return kid end
+			if kid.ClassName == "Tool" then return kid end
 		end
 		return nil
 	end
 
-	function getToolAnim(tool)
+	local function getToolAnim(tool)
 		for _, c in ipairs(tool:GetChildren()) do
-			if c.Name == "toolanim" and c.className == "StringValue" then
+			if c.Name == "toolanim" and c.ClassName == "StringValue" then
 				return c
 			end
 		end
 		return nil
 	end
 
-	function animateTool()
+	local function animateTool()
 
 		if (toolAnim == "None") then
 			RightShoulder.DesiredAngle = 1.57
@@ -148,7 +151,7 @@ local function characterAdded(c : Model)
 		end
 	end
 
-	function move(time)
+	local function move(time : number)
 		local amplitude
 		local frequency
 
@@ -185,7 +188,7 @@ local function characterAdded(c : Model)
 			frequency = 1
 		end
 
-		desiredAngle = amplitude * math.sin(time*frequency)
+		local desiredAngle = amplitude * math.sin(time*frequency)
 
 		RightShoulder.DesiredAngle = desiredAngle + climbFudge
 		LeftShoulder.DesiredAngle = desiredAngle - climbFudge
@@ -197,10 +200,10 @@ local function characterAdded(c : Model)
 
 		if tool then
 
-			animStringValueObject = getToolAnim(tool)
+			local animStringValueObject = getToolAnim(tool) :: StringValue
 
 			if animStringValueObject then
-				toolAnim = animStringValueObject.Value
+				local toolAnim = animStringValueObject.Value
 				-- message recieved, delete StringValue
 				animStringValueObject.Parent = nil
 				toolAnimTime = time + .3

@@ -1,5 +1,6 @@
 --!native
 --!optimize 2
+--!strict
 return function()
 	--- ATTENTION!!! There are site-specific ids at the end of this script!!!!!!!!!!!!!!!!!!!!
 
@@ -88,7 +89,7 @@ return function()
 	SlotNumber.BackgroundTransparency = 1
 	SlotNumber.BorderSizePixel = 0
 	SlotNumber.Font = Enum.Font.ArialBold
-	SlotNumber.FontSize = Enum.FontSize.Size18
+	SlotNumber.TextSize  = 18
 	SlotNumber.Position = UDim2.new(0,-7,0,-7)
 	SlotNumber.Size = UDim2.new(0,10,0,15)
 	SlotNumber.TextColor3 = Color3.new(1,1,1)
@@ -98,14 +99,14 @@ return function()
 	SlotNumber.ZIndex = 4
 	SlotNumber.Parent = TempSlot
 
-	local SlotNumberDownShadow = SlotNumber:clone()
+	local SlotNumberDownShadow = SlotNumber:Clone()
 	SlotNumberDownShadow.Name = "SlotNumberDownShadow"
 	SlotNumberDownShadow.TextColor3 = Color3.new(0,0,0)
 	SlotNumberDownShadow.ZIndex = 3
 	SlotNumberDownShadow.Position = UDim2.new(0,-6,0,-6)
 	SlotNumberDownShadow.Parent = TempSlot
 
-	local SlotNumberUpShadow = SlotNumberDownShadow:clone()
+	local SlotNumberUpShadow = SlotNumberDownShadow:Clone()
 	SlotNumberUpShadow.Name = "SlotNumberUpShadow"
 	SlotNumberUpShadow.Position = UDim2.new(0,-8,0,-8)
 	SlotNumberUpShadow.Parent = TempSlot
@@ -114,13 +115,13 @@ return function()
 	GearText.Name = "GearText"
 	GearText.BackgroundTransparency = 1
 	GearText.Font = Enum.Font.Arial
-	GearText.FontSize = Enum.FontSize.Size14
+	GearText.TextSize  = 14
 	GearText.Position = UDim2.new(0,-8,0,-8)
 	GearText.ZIndex = 2
 	GearText.Size = UDim2.new(1,16,1,16)
 	GearText.Text = ""
 	GearText.TextColor3 = Color3.new(1,1,1)
-	GearText.TextWrap = true
+	GearText.TextWrapped = true
 	GearText.Parent = TempSlot
 
 	--- Great, now lets make the inventory!
@@ -171,7 +172,7 @@ return function()
 	InventoryText.Name = "InventoryText"
 	InventoryText.BackgroundTransparency = 1
 	InventoryText.Font = Enum.Font.ArialBold
-	InventoryText.FontSize = Enum.FontSize.Size18
+	InventoryText.TextSize  = 18
 	InventoryText.Position = UDim2.new(0,-7,0,-7)
 	InventoryText.Size = UDim2.new(1,14,1,14)
 	InventoryText.Text = "Gear"
@@ -181,7 +182,7 @@ return function()
 	local closeButton = Instance.new("TextButton")
 	closeButton.Name = "CloseButton"
 	closeButton.Font = Enum.Font.ArialBold
-	closeButton.FontSize = Enum.FontSize.Size24
+	closeButton.TextSize  = 24
 	closeButton.Position = UDim2.new(1,-33,0,2)
 	closeButton.Size = UDim2.new(0,30,0,30)
 	closeButton.Style = Enum.ButtonStyle.RobloxButton
@@ -257,13 +258,13 @@ return function()
 	SearchBox.Name = "SearchBox"
 	SearchBox.BackgroundTransparency = 1
 	SearchBox.Font = Enum.Font.ArialBold
-	SearchBox.FontSize = Enum.FontSize.Size12
+	SearchBox.TextSize  = 12
 	SearchBox.Position = UDim2.new(0,-5,0,-5)
 	SearchBox.Size = UDim2.new(1,10,1,10)
 	SearchBox.TextColor3 = Color3.new(1,1,1)
 	SearchBox.TextXAlignment = Enum.TextXAlignment.Left
 	SearchBox.ZIndex = 2
-	SearchBox.TextWrap = true
+	SearchBox.TextWrapped = true
 	SearchBox.Text = "Search..."
 	SearchBox.Parent = SearchBoxFrame
 
@@ -292,13 +293,13 @@ return function()
 	GearText.Name = "GearText"
 	GearText.BackgroundTransparency = 1
 	GearText.Font = Enum.Font.Arial
-	GearText.FontSize = Enum.FontSize.Size14
+	GearText.TextSize  = 14
 	GearText.Position = UDim2.new(0,-8,0,-8)
 	GearText.Size = UDim2.new(1,16,1,16)
 	GearText.Text = ""
 	GearText.ZIndex = 2
 	GearText.TextColor3 = Color3.new(1,1,1)
-	GearText.TextWrap = true
+	GearText.TextWrapped = true
 	GearText.Parent = GearButton
 
 	local GearGridScrollingArea = Instance.new("Frame")
@@ -330,13 +331,13 @@ return function()
 	LoadoutsHeaderText.Name = "LoadoutsHeaderText"
 	LoadoutsHeaderText.BackgroundTransparency = 1
 	LoadoutsHeaderText.Font = Enum.Font.ArialBold
-	LoadoutsHeaderText.FontSize = Enum.FontSize.Size18
+	LoadoutsHeaderText.TextSize  = 18
 	LoadoutsHeaderText.Size = UDim2.new(1,0,1,0)
 	LoadoutsHeaderText.Text = "Loadouts"
 	LoadoutsHeaderText.TextColor3 = Color3.new(1,1,1)
 	LoadoutsHeaderText.Parent = GearLoadoutsHeader
 
-	local GearLoadoutsScrollingArea = GearGridScrollingArea:clone()
+	local GearLoadoutsScrollingArea = GearGridScrollingArea:Clone()
 	GearLoadoutsScrollingArea.Name = "GearLoadoutsScrollingArea"
 	GearLoadoutsScrollingArea.Position = UDim2.new(1,-15,0.15,2)
 	GearLoadoutsScrollingArea.Size = UDim2.new(0,17,0.85,-2)
@@ -370,12 +371,12 @@ return function()
 	GearName.Name = "GearName"
 	GearName.BackgroundTransparency = 1
 	GearName.Font = Enum.Font.ArialBold
-	GearName.FontSize = Enum.FontSize.Size18
+	GearName.TextSize  = 18
 	GearName.Position = UDim2.new(0,-3,0,0)
 	GearName.Size = UDim2.new(1,6,1,5)
 	GearName.Text = ""
 	GearName.TextColor3 = Color3.new(1,1,1)
-	GearName.TextWrap = true
+	GearName.TextWrapped = true
 	GearName.Parent = GearStats
 
 	local GearImage = Instance.new("ImageLabel")
@@ -406,19 +407,19 @@ return function()
 	GenreImage.Size = UDim2.new(0.25,0,1,0)
 	GenreImage.Parent = GearIcons
 
-	local AttributeOneImage = GenreImage:clone()
+	local AttributeOneImage = GenreImage:Clone()
 	AttributeOneImage.Name = "AttributeOneImage"
 	AttributeOneImage.BackgroundColor3 = Color3.new(1,51/255,0)
 	AttributeOneImage.Position = UDim2.new(0.25,0,0,0)
 	AttributeOneImage.Parent = GearIcons
 
-	local AttributeTwoImage = GenreImage:clone()
+	local AttributeTwoImage = GenreImage:Clone()
 	AttributeTwoImage.Name = "AttributeTwoImage"
 	AttributeTwoImage.BackgroundColor3 = Color3.new(153/255,1,153/255)
 	AttributeTwoImage.Position = UDim2.new(0.5,0,0,0)
 	AttributeTwoImage.Parent = GearIcons
 
-	local AttributeThreeImage = GenreImage:clone()
+	local AttributeThreeImage = GenreImage:Clone()
 	AttributeThreeImage.Name = "AttributeThreeImage"
 	AttributeThreeImage.BackgroundColor3 = Color3.new(0,0.5,0.5)
 	AttributeThreeImage.Position = UDim2.new(0.75,0,0,0)

@@ -1,8 +1,14 @@
 --!native
 --!optimize 2
+local wait = task.wait
+local spawn = task.spawn
+local delay = task.delay
 return function()
 	local RbxGui
-
+	
+	--Functions
+	local recalculateSmallPlayerListSize
+	
 	local localTesting = true
 
 	local screen = script.Parent
@@ -54,9 +60,9 @@ return function()
 		return Color3.new(r/255,g/255,b/255)
 	end
 
-	function robloxLock(instance)
+	local function robloxLock(instance)
 		--instance.RobloxLocked = true
-		children = instance:GetChildren()
+		local children = instance:GetChildren()
 		if children then
 			for i, child in ipairs(children) do
 				robloxLock(child)
@@ -64,7 +70,7 @@ return function()
 		end
 	end
 
-	function ArrayRemove(t, obj)
+	local function ArrayRemove(t, obj)
 		for i, obj2 in ipairs(t) do
 			if obj == obj2 then
 				table.remove(t, i)
@@ -308,7 +314,7 @@ return function()
 		end
 	)
 
-	function addPersonalServerContext()
+	local function addPersonalServerContext()
 		if personalServerContextAdded then return end
 		personalServerContextAdded = true
 		addContextMenuButton("Ban", 
@@ -501,14 +507,14 @@ return function()
 			minimizedState.Position = UDim2.new(1, -166, 0,0)
 			minimizedState.Size = UDim2.new(0, 151, 0, 30)
 
-			playerListButton = Instance.new("ImageButton")
+			local playerListButton = Instance.new("ImageButton")
 			playerListButton.Name = "GoSmallButton"
 			playerListButton.Image = "rbxassetid://16430517964"--"rbxasset://textures/ui/playerlist_hidden_small.png"
 			playerListButton.HoverImage = "rbxassetid://16430517612"
 			playerListButton.BackgroundTransparency = 1
 			playerListButton.Size = UDim2.new(0.0, 35, 0, 30)
 			playerListButton.Position = UDim2.new(1, -35, 0, 0)
-			playerListButton.MouseButton1Click:connect(
+			playerListButton.MouseButton1Click:Connect(
 				function()
 					transitionWindowsFunction("Small")
 				end)
@@ -760,8 +766,7 @@ return function()
 		task.wait()
 	end
 	if true then
-
-		RbxGui,msg = _G.LoadLibrary("RbxGui")
+		RbxGui = _G.LoadLibrary("RbxGui")
 
 		local function createTeamName(name, color)
 			local fontHeight = 20
@@ -955,25 +960,25 @@ return function()
 			if isHeader then
 				local mouseCon = {}
 
-				mouseCon[1] = truncLabel.MouseEnter:connect(function()
+				mouseCon[1] = truncLabel.MouseEnter:Connect(function()
 					truncLabel.BackgroundTransparency = 0.2
 				end)
-				mouseCon[2] = truncLabel.MouseLeave:connect(function()
+				mouseCon[2] = truncLabel.MouseLeave:Connect(function()
 					truncLabel.BackgroundTransparency = 1
 				end)
 
-				mouseCon[3] = truncLabel.MouseButton1Click:connect(function()
+				mouseCon[3] = truncLabel.MouseButton1Click:Connect(function()
 					sortPlayerListsFunction(truncLabel:GetChildren()[1].Name, (currentSortName == truncLabel:GetChildren()[1].Name) )
 					truncLabel.BackgroundTransparency = 1
 				end)
 
-				mouseCon[4] = truncLabel:GetChildren()[1].MouseButton1Click:connect(function()
+				mouseCon[4] = truncLabel:GetChildren()[1].MouseButton1Click:Connect(function()
 					sortPlayerListsFunction(textLabel.Name, (currentSortName == truncLabel.Name) )
 					truncLabel.BackgroundTransparency = 1
 				end)
 
 				mouseCon[5] = nil
-				mouseCon[5] = truncLabel.AncestryChanged:connect(function(child,parent)
+				mouseCon[5] = truncLabel.AncestryChanged:Connect(function(child,parent)
 					if parent == nil then
 						for i,connection in pairs(mouseCon) do
 							connection:disconnect()
@@ -1300,7 +1305,7 @@ return function()
 				playerContextMenu.Visible = false
 				playerContextMenu.ZIndex = 4
 
-				playerContextMenu.MouseLeave:connect(function()
+				playerContextMenu.MouseLeave:Connect(function()
 					local menuChildren = playerContextMenu:GetChildren()
 					for i = 1, #menuChildren do
 						if menuChildren[i].Name == "ChoiceButton" then
@@ -1312,7 +1317,7 @@ return function()
 					inContextMenu = false
 				end)
 
-				playerContextMenu.MouseEnter:connect(function()
+				playerContextMenu.MouseEnter:Connect(function()
 					inContextMenu = true
 				end)
 
@@ -1329,17 +1334,17 @@ return function()
 					newElementButton.Position = UDim2.new(0,0,0,elementHeight * (i - 1))
 					newElementButton.ZIndex = playerContextMenu.ZIndex + 1
 
-					newElementButton.MouseEnter:connect(function()
+					newElementButton.MouseEnter:Connect(function()
 						newElementButton.TextColor3 = Color3.new(0,0,0)
 						newElementButton.BackgroundTransparency = 0
 					end)
 
-					newElementButton.MouseLeave:connect(function()
+					newElementButton.MouseLeave:Connect(function()
 						newElementButton.TextColor3 = Color3.new(1,1,1)
 						newElementButton.BackgroundTransparency = 1
 					end)
 
-					newElementButton.MouseButton1Click:connect(function()
+					newElementButton.MouseButton1Click:Connect(function()
 						local element = elementNameToElement[newElementButton.Text]
 						pcall(function() element.DoIt(currentContextMenuPlayer) end)
 						playerContextMenu.Visible = false
@@ -1480,14 +1485,14 @@ return function()
 					if not leaderstats then
 						--We don't even have a leaderstats child, wait for one
 						table.insert(playerTable[player].LeaderStatConnections, 
-							player.ChildAdded:connect(
+							player.ChildAdded:Connect(
 								function(child)
 									if child.Name == "leaderstats" then
 										--Connections will be torn down
 										recreatePlayerFunction(player)
 									else
 										table.insert(playerTable[player].LeaderStatConnections, 
-											child.Changed:connect(
+											child.Changed:Connect(
 												function(prop)
 													if prop == "Name" and child.Name == "leaderstats" then
 														--Connections will be torn down
@@ -1499,14 +1504,14 @@ return function()
 					else
 						--We have a leaderstats, but not enough children, recreate if we get them
 						table.insert(playerTable[player].LeaderStatConnections, 
-							leaderstats.ChildAdded:connect(
+							leaderstats.ChildAdded:Connect(
 								function(child)
 									--TODO only look for IntValue
 									recreatePlayerFunction(player)
 								end)
 						)
 						table.insert(playerTable[player].LeaderStatConnections, 
-							leaderstats.AncestryChanged:connect(
+							leaderstats.AncestryChanged:Connect(
 								function(child)
 									--We got deleted, try again
 									recreatePlayerFunction(player)
@@ -1534,12 +1539,12 @@ return function()
 
 						if type(statValue) ~= "number" and statValue["Changed"] then
 							table.insert(playerTable[player].Connections,
-								statValue.Changed:connect(updateStat)
+								statValue.Changed:Connect(updateStat)
 							)
 						end
 
 						table.insert(playerTable[player].Connections,
-							statValue.AncestryChanged:connect(
+							statValue.AncestryChanged:Connect(
 								function()
 									recreatePlayerFunction(player)
 								end)
@@ -1576,7 +1581,7 @@ return function()
 
 				local previousTransparency = nil
 				table.insert(playerTable[player].Connections,
-					secondButton.MouseEnter:connect(
+					secondButton.MouseEnter:Connect(
 						function(x,y)
 							if playerContextMenu and playerContextMenu.Visible then
 								return
@@ -1591,7 +1596,7 @@ return function()
 							secondButton.Parent.BackgroundTransparency = 0
 						end))
 				table.insert(playerTable[player].Connections,
-					secondButton.MouseLeave:connect(
+					secondButton.MouseLeave:Connect(
 						function()
 							if previousTransparency ~= nil then					
 								previousTransparency = nil
@@ -1606,12 +1611,12 @@ return function()
 
 				local mouseDownX, mouseDownY
 				table.insert(playerTable[player].Connections,
-					secondButton.MouseButton1Down:connect(function(x,y) 
+					secondButton.MouseButton1Down:Connect(function(x,y) 
 						mouseDownX = x
 						mouseDownY = y
 					end))
 				table.insert(playerTable[player].Connections,
-					secondButton.MouseButton1Click:connect(function()
+					secondButton.MouseButton1Click:Connect(function()
 						showPlayerMenu(player, mouseDownX, secondButton.AbsolutePosition.Y + secondButton.AbsoluteSize.Y )
 					end))
 				playerObject.BackgroundTransparency = 1
@@ -1627,7 +1632,7 @@ return function()
 
 				if player == game.Players.LocalPlayer and supportFriends then
 					table.insert(playerTable[player].Connections,
-						player.FriendStatusChanged:connect(
+						player.FriendStatusChanged:Connect(
 							function(otherPlayer, friendStatus)
 								if friendRequestBlacklist[otherPlayer] then
 									updatePlayerFriendStatus(playerTable[otherPlayer]["NameObject" .. suffix], Enum.FriendStatus.NotFriend)
@@ -1639,7 +1644,7 @@ return function()
 				end
 			end
 			table.insert(playerTable[player].Connections,
-				player.Changed:connect(
+				player.Changed:Connect(
 					function(prop)
 						if prop == "MembershipType" then
 							updatePlayerName(playerTable[player]["NameObject" .. suffix], player.MembershipType, currentColor)
@@ -1655,7 +1660,7 @@ return function()
 
 		local function doSort(tableToSort, objectName, order, startPos, sortType, ascending)
 			local orderedPlayerTable = {}
-			getLocalPlayer = false
+			local getLocalPlayer = false
 			for i, player in ipairs(tableToSort) do
 				if playerTable[player] then
 					if playerTable[player][objectName] ~= nil then
@@ -1788,13 +1793,13 @@ return function()
 					scrollDown.Visible = visible
 					scrollBar.Visible = visible
 				end
-				scrollUp.Changed:connect(function(prop) 
+				scrollUp.Changed:Connect(function(prop) 
 					if prop == "Active" then
 						toggleScrollBar(scrollUp.Active or scrollDown.Active)
 					end
 				end)
 
-				scrollDown.Changed:connect(function(prop) 
+				scrollDown.Changed:Connect(function(prop) 
 					if prop == "Active" then
 						toggleScrollBar(scrollUp.Active or scrollDown.Active)
 					end
@@ -1805,7 +1810,7 @@ return function()
 			return headerFrame, scrollFrame, recalculateScroll, scrollOrder
 		end
 
-		createBoardsFunction = function (boardType, numStatColumns)
+		createBoardsFunction = function(boardType, numStatColumns)
 			local updatePlayerCount = function()
 				return #getPlayers()
 			end
@@ -1845,7 +1850,7 @@ return function()
 			playerListButton.HoverImage = "rbxassetid://16430516542"
 			playerListButton.Size = UDim2.new(0.0, 35, 0, 29)
 			playerListButton.Position = UDim2.new(0, 0, 0, 0)
-			playerListButton.MouseButton1Click:connect(
+			playerListButton.MouseButton1Click:Connect(
 				function()
 					toggleBigWindow()
 				end)
@@ -1858,7 +1863,7 @@ return function()
 			playerListButton.HoverImage = "rbxassetid://16430517090"
 			playerListButton.Size = UDim2.new(0.0, 38, 0, 29)
 			playerListButton.Position = UDim2.new(0, 35, 0, 0)
-			playerListButton.MouseButton1Click:connect(
+			playerListButton.MouseButton1Click:Connect(
 				function()
 					transitionWindowsFunction("None")
 				end)
@@ -1871,7 +1876,7 @@ return function()
 			playerListButton.BackgroundTransparency = 1
 			playerListButton.Size = UDim2.new(0.0, 29, 0, 29)
 			playerListButton.Position = UDim2.new(1, -30, 0.5, -13)
-			playerListButton.MouseButton1Click:connect(
+			playerListButton.MouseButton1Click:Connect(
 				function()
 					toggleBigWindow()
 				end)
@@ -1893,15 +1898,15 @@ return function()
 			placeName = RbxGui.AutoTruncateTextObject(placeName)
 			placeName.Parent = bigHeaderFrame
 
-			placeName.MouseEnter:connect(function()
+			placeName.MouseEnter:Connect(function()
 				placeName.BackgroundTransparency = 0.2
 			end)
 
-			placeName.MouseLeave:connect(function()
+			placeName.MouseLeave:Connect(function()
 				placeName.BackgroundTransparency = 1
 			end)
 
-			placeName.MouseButton1Click:connect(function() 
+			placeName.MouseButton1Click:Connect(function() 
 				sortPlayerListsFunction()
 			end)
 
@@ -2018,7 +2023,7 @@ return function()
 			end
 
 			if screenResizeCon then screenResizeCon:disconnect() end
-			screenResizeCon = screen.Changed:connect(
+			screenResizeCon = screen.Changed:Connect(
 				function(prop)
 					if prop == "AbsoluteSize" then
 						wait()
@@ -2071,11 +2076,11 @@ return function()
 			if teams then
 				local teamConnections = {}
 
-				teams.ChildAdded:connect(
+				teams.ChildAdded:Connect(
 					function(child)
 						if child:IsA("Team") then
 							teamsChanged()
-							teamConnections[child] = child.Changed:connect(
+							teamConnections[child] = child.Changed:Connect(
 								function(prop)
 									if prop == "TeamColor" or prop == "Name" then
 										--Rebuild when things change
@@ -2084,7 +2089,7 @@ return function()
 								end)
 						end
 					end)
-				teams.ChildRemoved:connect(
+				teams.ChildRemoved:Connect(
 					function(child)
 						if child:IsA("Team") then
 							if teamConnections[child] then
@@ -2096,14 +2101,14 @@ return function()
 					end)
 			end
 
-			game.Players.ChildAdded:connect(
+			game.Players.ChildAdded:Connect(
 				function(player)
 					if player:IsA("Player") then
 						addPlayerFunction(player)
 					end
 				end)
 
-			game.Players.ChildRemoved:connect(
+			game.Players.ChildRemoved:Connect(
 				function(player)
 					if player:IsA("Player") then
 						if removePlayerFunction then
@@ -2117,7 +2122,7 @@ return function()
 
 			--game.GuiService:AddKey("\t")
 			local lastTime = nil
-		--[[game.GuiService.KeyPressed:connect(
+		--[[game.GuiService.KeyPressed:Connect(
 			function(key)
 				if key == "\t" then
 					local modalCheck, isModal = pcall(function() return game.GuiService.IsModalDialog end)
@@ -2165,7 +2170,7 @@ return function()
 		setupBuildToolManagement()
 	else
 		local psVarCon = nil
-		psVarCon = game.Workspace.ChildAdded:connect(function(child)
+		psVarCon = game.Workspace.ChildAdded:Connect(function(child)
 			if child:IsA("BoolValue") and child.Name == "PSVariable" then
 				psVarCon:disconnect()
 				personalServerPlace = true
@@ -2180,13 +2185,13 @@ return function()
 	if contextMenu3d then
 		local inMenu = false
 
-		function waitForProperty(instance, name)
+		local function waitForProperty(instance, name)
 			while not instance[name] do
 				instance.Changed:wait()
 			end
 		end
 
-		function makeNewActionButton()
+		local function makeNewActionButton()
 			local button = Instance.new("TextButton")
 			button.Name = "ActionButton"
 			button.Style = Enum.ButtonStyle.RobloxButtonDefault
@@ -2202,7 +2207,7 @@ return function()
 			return button
 		end
 
-		function getContextElements(currentContextMenuPlayer)
+		local function getContextElements(currentContextMenuPlayer)
 			local elements = {}
 			for i, contextElement in ipairs(contextMenuElements) do
 				local element = contextElement
@@ -2223,7 +2228,7 @@ return function()
 					button.Name = "ContextButton" .. i
 					button.Visible = isVisible
 					button.Text = contextElement.Text
-					button.MouseButton1Click:connect(function()
+					button.MouseButton1Click:Connect(function()
 						if button.Active then
 							local success, result = pcall(function() element.DoIt(currentContextMenuPlayer) end)
 						end
@@ -2239,7 +2244,7 @@ return function()
 			return elements
 		end
 
-		function findContextElement(contextElements, button)
+		local function findContextElement(contextElements, button)
 			for i = 1, #contextElements do
 				if contextElements[i].Button == button then
 					return contextElements[i]
@@ -2247,7 +2252,7 @@ return function()
 			end
 		end
 
-		function populateActions(scrollFrame, nullFrame, recalcFunction, otherPlayer)
+		local function populateActions(scrollFrame, nullFrame, recalcFunction, otherPlayer)
 			local elements = getContextElements(otherPlayer)
 			for i = 1, #elements do
 				if elements[i].Button.Visible then
@@ -2257,7 +2262,7 @@ return function()
 				end
 
 				local actionButtonCon
-				actionButtonCon = elements[i].Button.MouseButton1Click:connect(function()
+				actionButtonCon = elements[i].Button.MouseButton1Click:Connect(function()
 					actionButtonCon:disconnect()
 
 					local nullFrameChildren = nullFrame:GetChildren()
@@ -2285,7 +2290,7 @@ return function()
 		end
 
 
-		function createContextMenu(otherPlayer)
+		local function createContextMenu(otherPlayer)
 
 			local frame = Instance.new("Frame")
 			frame.Name = "ContextMenuFrame"
@@ -2362,7 +2367,7 @@ return function()
 			doneButton.ZIndex = 3
 			doneButton.Parent = frame
 			doneButton.Modal = true
-			doneButtonCon = doneButton.MouseButton1Click:connect(function()
+			doneButtonCon = doneButton.MouseButton1Click:Connect(function()
 				doneButtonCon:disconnect()
 				inMenu = false
 				game.GuiService:RemoveCenterDialog(frame)
@@ -2375,11 +2380,11 @@ return function()
 			return frame
 		end
 
-		function makeContextInvisible(menu)
+		local function makeContextInvisible(menu)
 			menu.Visible = false
 		end
 
-		function goToContextMenu(otherPlayer)
+		local function goToContextMenu(otherPlayer)
 
 			local menu = createContextMenu(otherPlayer)
 
@@ -2402,7 +2407,7 @@ return function()
 
 		local currSelectedPlayer = nil
 	--[[if game.Players.LocalPlayer["HoverOnPlayerChanged"] then
-		game.Players.LocalPlayer.HoverOnPlayerChanged:connect(function(otherPlayer)
+		game.Players.LocalPlayer.HoverOnPlayerChanged:Connect(function(otherPlayer)
 			if not inMenu then
 				if otherPlayer and otherPlayer.userId < 0 then return end -- we don't want this for guests
 			end
@@ -2412,7 +2417,7 @@ return function()
 	end]]
 
 	--[[if game.Players.LocalPlayer["MouseDownOnPlayer"] then
-		game.Players.LocalPlayer.MouseDownOnPlayer:connect(function(otherPlayer)
+		game.Players.LocalPlayer.MouseDownOnPlayer:Connect(function(otherPlayer)
 			if currSelectedPlayer ~= otherPlayer then return end
 			if not inMenu and otherPlayer.userId > 0 then
 				goToContextMenu(otherPlayer)

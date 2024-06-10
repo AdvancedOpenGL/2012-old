@@ -1,27 +1,33 @@
+--!native
+--!optimize 2
+local wait = task.wait
+local spawn = task.spawn
+local delay = task.delay
+
 local t = {}
 
-local function ScopedConnect(parentInstance, instance, event, signalFunc, syncFunc, removeFunc)
-	local eventConnection = nil
+local function ScopedConnect(parentInstance : Instance, instance : Instance, event : string, signalFunc, syncFunc, removeFunc)
+	local eventConnection : RBXScriptConnection = nil
 
 	--Connection on parentInstance is scoped by parentInstance (when destroyed, it goes away)
 	local tryConnect = function()
 		if game:IsAncestorOf(parentInstance) then
 			--Entering the world, make sure we are connected/synced
 			if not eventConnection then
-				eventConnection = instance[event]:connect(signalFunc)
+				eventConnection = instance[event]:Connect(signalFunc)
 				if syncFunc then syncFunc() end
 			end
 		else
 			--Probably leaving the world, so disconnect for now
 			if eventConnection then
-				eventConnection:disconnect()
+				eventConnection:Disconnect()
 				if removeFunc then removeFunc() end
 			end
 		end
 	end
 
 	--Hook it up to ancestryChanged signal
-	local connection = parentInstance.AncestryChanged:connect(tryConnect)
+	local connection = parentInstance.AncestryChanged:Connect(tryConnect)
 	
 	--Now connect us if we're already in the world
 	tryConnect()
@@ -29,7 +35,7 @@ local function ScopedConnect(parentInstance, instance, event, signalFunc, syncFu
 	return connection
 end
 
-local function getLayerCollectorAncestor(instance)
+local function getLayerCollectorAncestor(instance : Instance)
 	local localInstance = instance
 	while localInstance and not localInstance:IsA("LayerCollector") do
 		localInstance = localInstance.Parent
@@ -44,7 +50,7 @@ local function CreateButtons(frame, buttons, yPos, ySize)
 		local button = Instance.new("TextButton")
 		button.Name = "Button" .. buttonNum
 		button.Font = Enum.Font.Arial
-		button.FontSize = Enum.FontSize.Size18
+		button.TextSize = 18
 		button.AutoButtonColor = true
 		button.Modal = true
 		if obj["Style"] then
@@ -57,7 +63,7 @@ local function CreateButtons(frame, buttons, yPos, ySize)
 		end
 		button.Text = obj.Text
 		button.TextColor3 = Color3.new(1,1,1)
-		button.MouseButton1Click:connect(obj.Function)
+		button.MouseButton1Click:Connect(obj.Function)
 		button.Parent = frame
 		buttonObjs[buttonNum] = button
 
@@ -144,7 +150,7 @@ t.CreateStyledMessageDialog = function(title, message, style, buttons)
 	titleLabel.Position = UDim2.new(0, 80, 0, 0)
 	titleLabel.Size = UDim2.new(1, -80, 0, 40)
 	titleLabel.Font = Enum.Font.ArialBold
-	titleLabel.FontSize = Enum.FontSize.Size36
+	titleLabel.TextSize = 36
 	titleLabel.TextXAlignment = Enum.TextXAlignment.Center
 	titleLabel.TextYAlignment = Enum.TextYAlignment.Center
 	titleLabel.Parent = frame
@@ -158,8 +164,8 @@ t.CreateStyledMessageDialog = function(title, message, style, buttons)
 	messageLabel.Size = UDim2.new(0.95, -80, 0, 55)
 	messageLabel.BackgroundTransparency = 1
 	messageLabel.Font = Enum.Font.Arial
-	messageLabel.FontSize = Enum.FontSize.Size18
-	messageLabel.TextWrap = true
+	messageLabel.TextSize = 18
+	messageLabel.TextWrapped = true
 	messageLabel.TextXAlignment = Enum.TextXAlignment.Left
 	messageLabel.TextYAlignment = Enum.TextYAlignment.Top
 	messageLabel.Parent = frame
@@ -185,7 +191,7 @@ t.CreateMessageDialog = function(title, message, buttons)
 	titleLabel.Position = UDim2.new(0, 0, 0, 0)
 	titleLabel.Size = UDim2.new(1, 0, 0.15, 0)
 	titleLabel.Font = Enum.Font.ArialBold
-	titleLabel.FontSize = Enum.FontSize.Size36
+	titleLabel.TextSize = 36
 	titleLabel.TextXAlignment = Enum.TextXAlignment.Center
 	titleLabel.TextYAlignment = Enum.TextYAlignment.Center
 	titleLabel.Parent = frame
@@ -198,8 +204,8 @@ t.CreateMessageDialog = function(title, message, buttons)
 	messageLabel.Size = UDim2.new(0.95, 0, .55, 0)
 	messageLabel.BackgroundTransparency = 1
 	messageLabel.Font = Enum.Font.Arial
-	messageLabel.FontSize = Enum.FontSize.Size18
-	messageLabel.TextWrap = true
+	messageLabel.TextSize = 18
+	messageLabel.TextWrapped = true
 	messageLabel.TextXAlignment = Enum.TextXAlignment.Left
 	messageLabel.TextYAlignment = Enum.TextYAlignment.Top
 	messageLabel.Parent = frame
@@ -234,11 +240,11 @@ t.CreateScrollingDropDownMenu = function(onSelectedCallback, size, position, bas
 	currentSelectionName.Size = UDim2.new(1, 0, 1, 0)
 	currentSelectionName.BackgroundTransparency = 1
 	currentSelectionName.Font = Enum.Font.SourceSansBold
-	currentSelectionName.FontSize = Enum.FontSize.Size18
+	currentSelectionName.TextSize = 18
 	currentSelectionName.TextXAlignment = Enum.TextXAlignment.Left
 	currentSelectionName.TextYAlignment = Enum.TextYAlignment.Center
 	currentSelectionName.TextColor3 = Color3.new(0.5, 0.5, 0.5)
-	currentSelectionName.TextWrap = true
+	currentSelectionName.TextWrapped = true
 	currentSelectionName.ZIndex = baseZIndex
 	currentSelectionName.Style = Enum.ButtonStyle.RobloxRoundDropdownButton
 	currentSelectionName.Text = "Choose One"
@@ -261,7 +267,7 @@ t.CreateScrollingDropDownMenu = function(onSelectedCallback, size, position, bas
 
 	local function onEntrySelected()
 		icon.Rotation = 0
-		scrollingBackground:TweenSize(UDim2.new(1, 0, 0, currentSelectionName.AbsoluteSize.y), Enum.EasingDirection.InOut, Enum.EasingStyle.Sine, 0.15, true)
+		scrollingBackground:TweenSize(UDim2.new(1, 0, 0, currentSelectionName.AbsoluteSize.Y), Enum.EasingDirection.InOut, Enum.EasingStyle.Sine, 0.15, true)
 		--
 		listMenu.ScrollBarThickness = 0
 		listMenu:TweenSize(UDim2.new(1, -16, 0, 24), Enum.EasingDirection.InOut, Enum.EasingStyle.Sine, 0.15, true, function()
@@ -273,7 +279,7 @@ t.CreateScrollingDropDownMenu = function(onSelectedCallback, size, position, bas
 		isOpen = false
 	end
 
-	currentSelectionName.MouseButton1Click:connect(function()
+	currentSelectionName.MouseButton1Click:Connect(function()
 		if not currentSelectionName.Active or #currentList == 0 then return end
 		if isOpen then
 			onEntrySelected()
@@ -367,7 +373,7 @@ t.CreateScrollingDropDownMenu = function(onSelectedCallback, size, position, bas
 
 		scrollingBackground = Instance.new('TextButton')
 		scrollingBackground.Name = "ScrollingBackground"
-		scrollingBackground.Size = UDim2.new(1, 0, 0, currentSelectionName.AbsoluteSize.y)
+		scrollingBackground.Size = UDim2.new(1, 0, 0, currentSelectionName.AbsoluteSize.Y)
 		scrollingBackground.Position = UDim2.new(0, 0, 0, 28)
 		scrollingBackground.BackgroundColor3 = Color3.new(1, 1, 1)
 		scrollingBackground.Style = Enum.ButtonStyle.RobloxRoundDropdownButton
@@ -387,7 +393,7 @@ t.CreateScrollingDropDownMenu = function(onSelectedCallback, size, position, bas
 			btn.BackgroundColor3 = Color3.new(1, 1, 1)
 			btn.BorderSizePixel = 0
 			btn.Font = Enum.Font.SourceSans
-			btn.FontSize = Enum.FontSize.Size18
+			btn.TextSize = 18
 			btn.TextColor3 = Color3.new(0.5, 0.5, 0.5)
 			btn.TextXAlignment = Enum.TextXAlignment.Left
 			btn.TextYAlignment = Enum.TextYAlignment.Center
@@ -396,7 +402,7 @@ t.CreateScrollingDropDownMenu = function(onSelectedCallback, size, position, bas
 			btn.AutoButtonColor = false
 			btn.Parent = listMenu
 
-			btn.MouseButton1Click:connect(function()
+			btn.MouseButton1Click:Connect(function()
 				currentSelectionName.Text = btn.Text
 				onEntrySelected()
 				btn.Font = Enum.Font.SourceSans
@@ -405,11 +411,11 @@ t.CreateScrollingDropDownMenu = function(onSelectedCallback, size, position, bas
 				onSelectedCallback(btn.Text)
 			end)
 
-			btn.MouseEnter:connect(function()
+			btn.MouseEnter:Connect(function()
 				btn.TextColor3 = Color3.new(1, 1, 1)
 				btn.BackgroundColor3 = Color3.new(0.75, 0.75, 0.75)
 			end)
-			btn.MouseLeave:connect(function()
+			btn.MouseLeave:Connect(function()
 				btn.TextColor3 = Color3.new(0.5, 0.5, 0.5)
 				btn.BackgroundColor3 = Color3.new(1, 1, 1)
 			end)
@@ -439,11 +445,11 @@ t.CreateDropDownMenu = function(items, onSelect, forRoblox, whiteSkin, baseZ)
 
 	local dropDownMenu = Instance.new("TextButton")
 	dropDownMenu.Name = "DropDownMenuButton"
-	dropDownMenu.TextWrap = true
+	dropDownMenu.TextWrapped = true
 	dropDownMenu.TextColor3 = textColor
 	dropDownMenu.Text = "Choose One"
 	dropDownMenu.Font = Enum.Font.ArialBold
-	dropDownMenu.FontSize = Enum.FontSize.Size18
+	dropDownMenu.TextSize = 18
 	dropDownMenu.TextXAlignment = Enum.TextXAlignment.Left
 	dropDownMenu.TextYAlignment = Enum.TextYAlignment.Center
 	dropDownMenu.BackgroundTransparency = 1
@@ -508,13 +514,13 @@ t.CreateDropDownMenu = function(items, onSelect, forRoblox, whiteSkin, baseZ)
 	choiceButton.TextYAlignment = Enum.TextYAlignment.Center
 	choiceButton.BackgroundColor3 = Color3.new(1, 1, 1)
 	choiceButton.Font = Enum.Font.Arial
-	choiceButton.FontSize = Enum.FontSize.Size18
+	choiceButton.TextSize = 18
 	if useScrollButtons then
 		choiceButton.Size = UDim2.new(1,-13, .8/((dropDownItemCount + 1)*.8),0) 
 	else
 		choiceButton.Size = UDim2.new(1, 0, .8/((dropDownItemCount + 1)*.8),0) 
 	end
-	choiceButton.TextWrap = true
+	choiceButton.TextWrapped = true
 	choiceButton.ZIndex = 2 + baseZIndex
 
 	local areaSoak = Instance.new("TextButton")
@@ -596,7 +602,7 @@ t.CreateDropDownMenu = function(items, onSelect, forRoblox, whiteSkin, baseZ)
 			updateScroll()
 		end
 	end
-	droppedDownMenu.MouseButton1Click:connect(toggleVisibility)
+	droppedDownMenu.MouseButton1Click:Connect(toggleVisibility)
 
 	local updateSelection = function(text)
 		local foundItem = false
@@ -663,15 +669,15 @@ t.CreateDropDownMenu = function(items, onSelect, forRoblox, whiteSkin, baseZ)
 		scrollUpButton.Image = "rbxasset://textures/ui/scrollbuttonUp.png"
 		scrollUpButton.Size = UDim2.new(0,17,0,17) 
 		scrollUpButton.Position = UDim2.new(1,-11,(1*.8)/((dropDownItemCount+1)*.8),0)
-		scrollUpButton.MouseButton1Click:connect(
+		scrollUpButton.MouseButton1Click:Connect(
 			function()
 				scrollMouseCount = scrollMouseCount + 1
 			end)
-		scrollUpButton.MouseLeave:connect(
+		scrollUpButton.MouseLeave:Connect(
 			function()
 				scrollMouseCount = scrollMouseCount + 1
 			end)
-		scrollUpButton.MouseButton1Down:connect(
+		scrollUpButton.MouseButton1Down:Connect(
 			function()
 				scrollMouseCount = scrollMouseCount + 1
 	
@@ -695,15 +701,15 @@ t.CreateDropDownMenu = function(items, onSelect, forRoblox, whiteSkin, baseZ)
 		scrollDownButton.Size = UDim2.new(0,17,0,17) 
 		scrollDownButton.Position = UDim2.new(1,-11,1,-11)
 		scrollDownButton.Parent = droppedDownMenu
-		scrollDownButton.MouseButton1Click:connect(
+		scrollDownButton.MouseButton1Click:Connect(
 			function()
 				scrollMouseCount = scrollMouseCount + 1
 			end)
-		scrollDownButton.MouseLeave:connect(
+		scrollDownButton.MouseLeave:Connect(
 			function()
 				scrollMouseCount = scrollMouseCount + 1
 			end)
-		scrollDownButton.MouseButton1Down:connect(
+		scrollDownButton.MouseButton1Down:Connect(
 			function()
 				scrollMouseCount = scrollMouseCount + 1
 
@@ -729,14 +735,14 @@ t.CreateDropDownMenu = function(items, onSelect, forRoblox, whiteSkin, baseZ)
 
 	for i,item in ipairs(items) do
 		-- needed to maintain local scope for items in event listeners below
-		local button = choiceButton:clone()	
+		local button = choiceButton:Clone()	
 		button.Text = item
 		button.Parent = droppedDownMenu
 		if (whiteSkin) then
 			button.TextColor3 = textColor
 		end
 
-		button.MouseButton1Click:connect(function()
+		button.MouseButton1Click:Connect(function()
 			--Remove Highlight
 			if (not whiteSkin) then
 				button.TextColor3 = Color3.new(1,1,1)
@@ -748,7 +754,7 @@ t.CreateDropDownMenu = function(items, onSelect, forRoblox, whiteSkin, baseZ)
 
 			toggleVisibility()
 		end)
-		button.MouseEnter:connect(function()
+		button.MouseEnter:Connect(function()
 			--Add Highlight	
 			if (not whiteSkin) then
 				button.TextColor3 = Color3.new(0,0,0)
@@ -756,7 +762,7 @@ t.CreateDropDownMenu = function(items, onSelect, forRoblox, whiteSkin, baseZ)
 			button.BackgroundTransparency = 0
 		end)
 
-		button.MouseLeave:connect(function()
+		button.MouseLeave:Connect(function()
 			--Remove Highlight
 			if (not whiteSkin) then
 				button.TextColor3 = Color3.new(1,1,1)
@@ -768,7 +774,7 @@ t.CreateDropDownMenu = function(items, onSelect, forRoblox, whiteSkin, baseZ)
 	--This does the initial layout of the buttons	
 	updateScroll()
 	
-	frame.AncestryChanged:connect(function(child,parent)
+	frame.AncestryChanged:Connect(function(child,parent)
 		if parent == nil then
 			areaSoak.Parent = nil
 		else
@@ -776,8 +782,8 @@ t.CreateDropDownMenu = function(items, onSelect, forRoblox, whiteSkin, baseZ)
 		end
 	end)
 
-	dropDownMenu.MouseButton1Click:connect(toggleVisibility)
-	areaSoak.MouseButton1Click:connect(toggleVisibility)
+	dropDownMenu.MouseButton1Click:Connect(toggleVisibility)
+	areaSoak.MouseButton1Click:Connect(toggleVisibility)
 	return frame, updateSelection
 end
 
@@ -911,14 +917,14 @@ t.LayoutGuiObjects = function(frame, guiObjects, settingsTable)
 		layoutGuiObjectsHelper(wrapperFrame, guiObjects, settingsTable)
 	end
 	
-	frame.Changed:connect(
+	frame.Changed:Connect(
 		function(prop)
 			if prop == "AbsoluteSize" then
 				--Wait a heartbeat for it to sync in
 				recalculate(nil)
 			end
 		end)
-	frame.AncestryChanged:connect(recalculate)
+	frame.AncestryChanged:Connect(recalculate)
 
 	layoutGuiObjectsHelper(wrapperFrame, guiObjects, settingsTable)
 end
@@ -944,7 +950,7 @@ t.CreateSlider = function(steps,width,position)
 	areaSoak.Visible = false
 	areaSoak.ZIndex = 4
 	
-	sliderGui.AncestryChanged:connect(function(child,parent)
+	sliderGui.AncestryChanged:Connect(function(child,parent)
 		if parent == nil then
 			areaSoak.Parent = nil
 		else
@@ -988,34 +994,34 @@ t.CreateSlider = function(steps,width,position)
 	
 	local areaSoakMouseMoveCon = nil
 	
-	areaSoak.MouseLeave:connect(function()
+	areaSoak.MouseLeave:Connect(function()
 		if areaSoak.Visible then
 			cancelSlide(areaSoak)
 		end
 	end)
-	areaSoak.MouseButton1Up:connect(function()
+	areaSoak.MouseButton1Up:Connect(function()
 		if areaSoak.Visible then
 			cancelSlide(areaSoak)
 		end
 	end)
 	
-	slider.MouseButton1Down:connect(function()
+	slider.MouseButton1Down:Connect(function()
 		areaSoak.Visible = true
-		if areaSoakMouseMoveCon then areaSoakMouseMoveCon:disconnect() end
-		areaSoakMouseMoveCon = areaSoak.MouseMoved:connect(function(x,y)
+		if areaSoakMouseMoveCon then areaSoakMouseMoveCon:Disconnect() end
+		areaSoakMouseMoveCon = areaSoak.MouseMoved:Connect(function(x,y)
 			setSliderPos(x,slider,sliderPosition,bar,steps)
 		end)
 	end)
 	
-	slider.MouseButton1Up:connect(function() cancelSlide(areaSoak) end)
+	slider.MouseButton1Up:Connect(function() cancelSlide(areaSoak) end)
 	
-	sliderPosition.Changed:connect(function(prop)
+	sliderPosition.Changed:Connect(function(prop)
 		sliderPosition.Value = math.min(steps, math.max(1,sliderPosition.Value))
 		local relativePosX = (sliderPosition.Value - 1) / (steps - 1)
 		slider.Position = UDim2.new(relativePosX,-slider.AbsoluteSize.X/2,slider.Position.Y.Scale,slider.Position.Y.Offset)
 	end)
 	
-	bar.MouseButton1Down:connect(function(x,y)
+	bar.MouseButton1Down:Connect(function(x,y)
 		setSliderPos(x,slider,sliderPosition,bar,steps)
 	end)
 	
@@ -1045,7 +1051,7 @@ t.CreateSliderNew = function(steps,width,position)
 	areaSoak.Visible = false
 	areaSoak.ZIndex = 6
 	
-	sliderGui.AncestryChanged:connect(function(child,parent)
+	sliderGui.AncestryChanged:Connect(function(child,parent)
 		if parent == nil then
 			areaSoak.Parent = nil
 		else
@@ -1080,7 +1086,7 @@ t.CreateSliderNew = function(steps,width,position)
 		bar.Position = position
 	end
 
-	local barLeft = bar:clone()
+	local barLeft = bar:Clone()
 	barLeft.Name = "BarLeft"
 	barLeft.Image = "rbxasset://textures/ui/Slider-BKG-Left-Cap.png"
 	barLeft.Size = UDim2.new(0, sliderBarCapImgWidth, 0, sliderBarImgHeight)
@@ -1088,19 +1094,19 @@ t.CreateSliderNew = function(steps,width,position)
 	barLeft.Parent = sliderGui	
 	barLeft.ZIndex = 3
 
-	local barRight = barLeft:clone()
+	local barRight = barLeft:Clone()
 	barRight.Name = "BarRight"
 	barRight.Image = "rbxasset://textures/ui/Slider-BKG-Right-Cap.png"
 	barRight.Position = UDim2.new(position.X.Scale, position.X.Offset + displayWidth, position.Y.Scale, position.Y.Offset)
 	barRight.Parent = sliderGui	
 
-	local fillLeft = barLeft:clone()
+	local fillLeft = barLeft:Clone()
 	fillLeft.Name = "FillLeft"
 	fillLeft.Image = "rbxasset://textures/ui/Slider-Fill-Left-Cap.png"
 	fillLeft.Parent = sliderGui	
 	fillLeft.ZIndex = 4
 
-	local fill = fillLeft:clone()
+	local fill = fillLeft:Clone()
 	fill.Name = "Fill"
 	fill.Image = "rbxasset://textures/ui/Slider-Fill-Center.png"
 	fill.Parent = bar	
@@ -1122,43 +1128,43 @@ t.CreateSliderNew = function(steps,width,position)
 	
 	local areaSoakMouseMoveCon = nil
 	
-	areaSoak.MouseLeave:connect(function()
+	areaSoak.MouseLeave:Connect(function()
 		if areaSoak.Visible then
 			cancelSlide(areaSoak)
 		end
 	end)
-	areaSoak.MouseButton1Up:connect(function()
+	areaSoak.MouseButton1Up:Connect(function()
 		if areaSoak.Visible then
 			cancelSlide(areaSoak)
 		end
 	end)
 	
-	slider.MouseButton1Down:connect(function()
+	slider.MouseButton1Down:Connect(function()
 		areaSoak.Visible = true
-		if areaSoakMouseMoveCon then areaSoakMouseMoveCon:disconnect() end
-		areaSoakMouseMoveCon = areaSoak.MouseMoved:connect(function(x,y)
+		if areaSoakMouseMoveCon then areaSoakMouseMoveCon:Disconnect() end
+		areaSoakMouseMoveCon = areaSoak.MouseMoved:Connect(function(x,y)
 			setSliderPos(x,slider,sliderPosition,bar,steps)
 		end)
 	end)
 	
-	slider.MouseButton1Up:connect(function() cancelSlide(areaSoak) end)
+	slider.MouseButton1Up:Connect(function() cancelSlide(areaSoak) end)
 	
-	sliderPosition.Changed:connect(function(prop)
+	sliderPosition.Changed:Connect(function(prop)
 		sliderPosition.Value = math.min(steps, math.max(1,sliderPosition.Value))
 		local relativePosX = (sliderPosition.Value - 1) / (steps - 1)
 		slider.Position = UDim2.new(relativePosX,-slider.AbsoluteSize.X/2,slider.Position.Y.Scale,slider.Position.Y.Offset)
 		fill.Size = UDim2.new(relativePosX, 0, 1, 0)
 	end)
 	
-	bar.MouseButton1Down:connect(function(x,y)
+	bar.MouseButton1Down:Connect(function(x,y)
 		setSliderPos(x,slider,sliderPosition,bar,steps)
 	end)
 
-	fill.MouseButton1Down:connect(function(x,y)
+	fill.MouseButton1Down:Connect(function(x,y)
 		setSliderPos(x,slider,sliderPosition,bar,steps)
 	end)
 
-	fillLeft.MouseButton1Down:connect(function(x,y)
+	fillLeft.MouseButton1Down:Connect(function(x,y)
 		setSliderPos(x,slider,sliderPosition,bar,steps)
 	end)
 
@@ -1225,14 +1231,14 @@ t.CreateTrueScrollingFrame = function()
 		triFrame.Position = UDim2.new(0,3 + (i -1),0.5,2 - (i -1))
 		triFrame.Parent = scrollUpButton
 	end
-	scrollUpButton.MouseEnter:connect(function()
+	scrollUpButton.MouseEnter:Connect(function()
 		scrollUpButton.BackgroundTransparency = 0.1
 		local upChildren = scrollUpButton:GetChildren()
 		for i = 1, #upChildren do
 			upChildren[i].BackgroundTransparency = 0.1
 		end
 	end)
-	scrollUpButton.MouseLeave:connect(function()
+	scrollUpButton.MouseLeave:Connect(function()
 		scrollUpButton.BackgroundTransparency = 0.5
 		local upChildren = scrollUpButton:GetChildren()
 		for i = 1, #upChildren do
@@ -1240,21 +1246,21 @@ t.CreateTrueScrollingFrame = function()
 		end
 	end)
 
-	local scrollDownButton = scrollUpButton:clone()
+	local scrollDownButton = scrollUpButton:Clone()
 	scrollDownButton.Name = "ScrollDownButton"
 	scrollDownButton.Position = UDim2.new(0,0,1,-18)
 	local downChildren = scrollDownButton:GetChildren()
 	for i = 1, #downChildren do
 		downChildren[i].Position = UDim2.new(0,3 + (i -1),0.5,-2 + (i - 1))
 	end
-	scrollDownButton.MouseEnter:connect(function()
+	scrollDownButton.MouseEnter:Connect(function()
 		scrollDownButton.BackgroundTransparency = 0.1
 		local downChildren = scrollDownButton:GetChildren()
 		for i = 1, #downChildren do
 			downChildren[i].BackgroundTransparency = 0.1
 		end
 	end)
-	scrollDownButton.MouseLeave:connect(function()
+	scrollDownButton.MouseLeave:Connect(function()
 		scrollDownButton.BackgroundTransparency = 0.5
 		local downChildren = scrollDownButton:GetChildren()
 		for i = 1, #downChildren do
@@ -1293,21 +1299,21 @@ t.CreateTrueScrollingFrame = function()
 	scrollNub.BackgroundTransparency = 0.5
 	scrollNub.Parent = scrollbar
 
-	local newNub = scrollNub:clone()
+	local newNub = scrollNub:Clone()
 	newNub.Position = UDim2.new(0.5,-5,0.5,-2)
 	newNub.Parent = scrollbar
 	
-	local lastNub = scrollNub:clone()
+	local lastNub = scrollNub:Clone()
 	lastNub.Position = UDim2.new(0.5,-5,0.5,2)
 	lastNub.Parent = scrollbar
 
-	scrollbar.MouseEnter:connect(function()
+	scrollbar.MouseEnter:Connect(function()
 		scrollbar.BackgroundTransparency = 0.1
 		scrollNub.BackgroundTransparency = 0.1
 		newNub.BackgroundTransparency = 0.1
 		lastNub.BackgroundTransparency = 0.1
 	end)
-	scrollbar.MouseLeave:connect(function()
+	scrollbar.MouseLeave:Connect(function()
 		scrollbar.BackgroundTransparency = 0.5
 		scrollNub.BackgroundTransparency = 0.5
 		newNub.BackgroundTransparency = 0.5
@@ -1326,18 +1332,18 @@ t.CreateTrueScrollingFrame = function()
 	local function positionScrollBar(x,y,offset)
 		local oldPos = scrollbar.Position
 
-		if y < scrollTrack.AbsolutePosition.y then
+		if y < scrollTrack.AbsolutePosition.Y then
 			scrollbar.Position = UDim2.new(scrollbar.Position.X.Scale,scrollbar.Position.X.Offset,0,0)
 			return (oldPos ~= scrollbar.Position)
 		end
 		
 		local relativeSize = scrollbar.AbsoluteSize.Y/scrollTrack.AbsoluteSize.Y
 
-		if y > (scrollTrack.AbsolutePosition.y + scrollTrack.AbsoluteSize.y) then
+		if y > (scrollTrack.AbsolutePosition.Y + scrollTrack.AbsoluteSize.Y) then
 			scrollbar.Position = UDim2.new(scrollbar.Position.X.Scale,scrollbar.Position.X.Offset,1 - relativeSize,0)
 			return (oldPos ~= scrollbar.Position)
 		end
-		local newScaleYPos = (y - scrollTrack.AbsolutePosition.y - offset)/scrollTrack.AbsoluteSize.y
+		local newScaleYPos = (y - scrollTrack.AbsolutePosition.Y - offset)/scrollTrack.AbsoluteSize.Y
 		if newScaleYPos + relativeSize > 1 then
 			newScaleYPos = 1 - relativeSize
 			scrollBottom.Value = true
@@ -1423,8 +1429,8 @@ t.CreateTrueScrollingFrame = function()
 			scrollDownButton.Visible = false
 			scrollUpButton.Visible = false
 
-			if dragCon then dragCon:disconnect() dragCon = nil end
-			if upCon then upCon:disconnect() upCon = nil end
+			if dragCon then dragCon:Disconnect() dragCon = nil end
+			if upCon then upCon:Disconnect() upCon = nil end
 			return
 		end
 
@@ -1445,11 +1451,11 @@ t.CreateTrueScrollingFrame = function()
 		local percentPosition = (scrollingFrame.AbsolutePosition.Y - lowY)/totalYSpan
 		scrollbar.Position = UDim2.new(scrollbar.Position.X.Scale,scrollbar.Position.X.Offset,percentPosition,-scrollbar.AbsoluteSize.X/2)
 
-		if scrollbar.AbsolutePosition.y < scrollTrack.AbsolutePosition.y then
+		if scrollbar.AbsolutePosition.Y < scrollTrack.AbsolutePosition.Y then
 			scrollbar.Position = UDim2.new(scrollbar.Position.X.Scale,scrollbar.Position.X.Offset,0,0)
 		end
 
-		if (scrollbar.AbsolutePosition.y + scrollbar.AbsoluteSize.Y) > (scrollTrack.AbsolutePosition.y + scrollTrack.AbsoluteSize.y) then
+		if (scrollbar.AbsolutePosition.Y + scrollbar.AbsoluteSize.Y) > (scrollTrack.AbsolutePosition.Y + scrollTrack.AbsoluteSize.Y) then
 			local relativeSize = scrollbar.AbsoluteSize.Y/scrollTrack.AbsoluteSize.Y
 			scrollbar.Position = UDim2.new(scrollbar.Position.X.Scale,scrollbar.Position.X.Offset,1 - relativeSize,0)
 		end
@@ -1480,13 +1486,13 @@ t.CreateTrueScrollingFrame = function()
 
 	local function scrollUp(mouseYPos)
 		if scrollUpButton.Active then
-			scrollStamp = tick()
+			local scrollStamp = tick()
 			local current = scrollStamp
 			local upCon
-			upCon = mouseDrag.MouseButton1Up:connect(function()
+			upCon = mouseDrag.MouseButton1Up:Connect(function()
 				scrollStamp = tick()
 				mouseDrag.Parent = nil
-				upCon:disconnect()
+				upCon:Disconnect()
 			end)
 			mouseDrag.Parent = getLayerCollectorAncestor(scrollbar)
 			doScrollUp()
@@ -1495,7 +1501,7 @@ t.CreateTrueScrollingFrame = function()
 			local w = 0.1
 			while scrollStamp == current do
 				doScrollUp()
-				if mouseYPos and mouseYPos > scrollbar.AbsolutePosition.y then
+				if mouseYPos and mouseYPos > scrollbar.AbsolutePosition.Y then
 					break
 				end
 				if not scrollUpButton.Active then break end
@@ -1514,10 +1520,10 @@ t.CreateTrueScrollingFrame = function()
 			scrollStamp = tick()
 			local current = scrollStamp
 			local downCon
-			downCon = mouseDrag.MouseButton1Up:connect(function()
+			downCon = mouseDrag.MouseButton1Up:Connect(function()
 				scrollStamp = tick()
 				mouseDrag.Parent = nil
-				downCon:disconnect()
+				downCon:Disconnect()
 			end)
 			mouseDrag.Parent = getLayerCollectorAncestor(scrollbar)
 			doScrollDown()
@@ -1526,7 +1532,7 @@ t.CreateTrueScrollingFrame = function()
 			local w = 0.1
 			while scrollStamp == current do
 				doScrollDown()
-				if mouseYPos and mouseYPos < (scrollbar.AbsolutePosition.y + scrollbar.AbsoluteSize.x) then
+				if mouseYPos and mouseYPos < (scrollbar.AbsolutePosition.Y + scrollbar.AbsoluteSize.X) then
 					break
 				end
 				if not scrollDownButton.Active then break end
@@ -1540,15 +1546,15 @@ t.CreateTrueScrollingFrame = function()
 		end
 	end
 	
-	scrollbar.MouseButton1Down:connect(function(x,y)
+	scrollbar.MouseButton1Down:Connect(function(x,y)
 		if scrollbar.Active then
 			scrollStamp = tick()
-			local mouseOffset = y - scrollbar.AbsolutePosition.y
-			if dragCon then dragCon:disconnect() dragCon = nil end
-			if upCon then upCon:disconnect() upCon = nil end
+			local mouseOffset = y - scrollbar.AbsolutePosition.Y
+			if dragCon then dragCon:Disconnect() dragCon = nil end
+			if upCon then upCon:Disconnect() upCon = nil end
 			local prevY = y
 			local reentrancyGuardMouseScroll = false
-			dragCon = mouseDrag.MouseMoved:connect(function(x,y)
+			dragCon = mouseDrag.MouseMoved:Connect(function(x,y)
 				if reentrancyGuardMouseScroll then return end
 				
 				reentrancyGuardMouseScroll = true
@@ -1558,11 +1564,11 @@ t.CreateTrueScrollingFrame = function()
 				reentrancyGuardMouseScroll = false
 				
 			end)
-			upCon = mouseDrag.MouseButton1Up:connect(function()
+			upCon = mouseDrag.MouseButton1Up:Connect(function()
 				scrollStamp = tick()
 				mouseDrag.Parent = nil
-				dragCon:disconnect(); dragCon = nil
-				upCon:disconnect(); drag = nil
+				dragCon:Disconnect(); dragCon = nil
+				upCon:Disconnect(); drag = nil
 			end)
 			mouseDrag.Parent = getLayerCollectorAncestor(scrollbar)
 		end
@@ -1570,21 +1576,21 @@ t.CreateTrueScrollingFrame = function()
 
 	local scrollMouseCount = 0
 
-	scrollUpButton.MouseButton1Down:connect(function()
+	scrollUpButton.MouseButton1Down:Connect(function()
 		scrollUp()
 	end)
-	scrollUpButton.MouseButton1Up:connect(function()
+	scrollUpButton.MouseButton1Up:Connect(function()
 		scrollStamp = tick()
 	end)
 
-	scrollDownButton.MouseButton1Up:connect(function()
+	scrollDownButton.MouseButton1Up:Connect(function()
 		scrollStamp = tick()
 	end)
-	scrollDownButton.MouseButton1Down:connect(function()
+	scrollDownButton.MouseButton1Down:Connect(function()
 		 scrollDown()
 	end)
 		
-	scrollbar.MouseButton1Up:connect(function()
+	scrollbar.MouseButton1Up:Connect(function()
 		scrollStamp = tick()
 	end)
 	
@@ -1619,7 +1625,7 @@ t.CreateTrueScrollingFrame = function()
 		end
 	end
 
-	scrollingFrame.DescendantAdded:connect(function(instance)
+	scrollingFrame.DescendantAdded:Connect(function(instance)
 		if not instance:IsA("GuiObject") then return end
 
 		if instance.Visible then
@@ -1627,20 +1633,20 @@ t.CreateTrueScrollingFrame = function()
 			highLowRecheck()
 		end
 
-		descendantsChangeConMap[instance] = instance.Changed:connect(function(prop) descendantChanged(instance, prop) end)
+		descendantsChangeConMap[instance] = instance.Changed:Connect(function(prop) descendantChanged(instance, prop) end)
 	end)
 
-	scrollingFrame.DescendantRemoving:connect(function(instance)
+	scrollingFrame.DescendantRemoving:Connect(function(instance)
 		if not instance:IsA("GuiObject") then return end
 		if descendantsChangeConMap[instance] then
-			descendantsChangeConMap[instance]:disconnect()
+			descendantsChangeConMap[instance]:Disconnect()
 			descendantsChangeConMap[instance] = nil
 		end
 		wait() -- wait a heartbeat for sizes to reconfig
 		highLowRecheck()
 	end)
 	
-	scrollingFrame.Changed:connect(function(prop)
+	scrollingFrame.Changed:Connect(function(prop)
 		if prop == "AbsoluteSize" then
 			if not highY or not lowY then return end
 
@@ -1968,7 +1974,7 @@ t.CreateScrollingFrame = function(orderList,scrollStyle)
 		
 		if not scrollDrag.Parent then return end
 		
-		local dragSizeY = scrollDrag.Parent.AbsoluteSize.y * (1/(guiObjects - howManyDisplayed + 1))
+		local dragSizeY = scrollDrag.Parent.AbsoluteSize.Y * (1/(guiObjects - howManyDisplayed + 1))
 		if dragSizeY < 16 then dragSizeY = 16 end
 		scrollDrag.Size = UDim2.new(scrollDrag.Size.X.Scale,scrollDrag.Size.X.Offset,scrollDrag.Size.Y.Scale,dragSizeY)
 
@@ -1978,7 +1984,7 @@ t.CreateScrollingFrame = function(orderList,scrollStyle)
 		local absYPos = 0
 		
 		if relativeYPos ~= 0 then
-			absYPos = (relativeYPos * scrollbar.AbsoluteSize.y) - (relativeYPos * scrollDrag.AbsoluteSize.y)
+			absYPos = (relativeYPos * scrollbar.AbsoluteSize.Y) - (relativeYPos * scrollDrag.AbsoluteSize.Y)
 		end
 		
 		scrollDrag.Position = UDim2.new(scrollDrag.Position.X.Scale,scrollDrag.Position.X.Offset,scrollDrag.Position.Y.Scale,absYPos)
@@ -2018,10 +2024,10 @@ t.CreateScrollingFrame = function(orderList,scrollStyle)
 			scrollStamp = tick()
 			local current = scrollStamp
 			local upCon
-			upCon = mouseDrag.MouseButton1Up:connect(function()
+			upCon = mouseDrag.MouseButton1Up:Connect(function()
 				scrollStamp = tick()
 				mouseDrag.Parent = nil
-				upCon:disconnect()
+				upCon:Disconnect()
 			end)
 			mouseDrag.Parent = getLayerCollectorAncestor(scrollbar)
 			doScrollUp()
@@ -2030,7 +2036,7 @@ t.CreateScrollingFrame = function(orderList,scrollStyle)
 			local w = 0.1
 			while scrollStamp == current do
 				doScrollUp()
-				if mouseYPos and mouseYPos > scrollDrag.AbsolutePosition.y then
+				if mouseYPos and mouseYPos > scrollDrag.AbsolutePosition.Y then
 					break
 				end
 				if not scrollUpButton.Active then break end
@@ -2049,10 +2055,10 @@ t.CreateScrollingFrame = function(orderList,scrollStyle)
 			scrollStamp = tick()
 			local current = scrollStamp
 			local downCon
-			downCon = mouseDrag.MouseButton1Up:connect(function()
+			downCon = mouseDrag.MouseButton1Up:Connect(function()
 				scrollStamp = tick()
 				mouseDrag.Parent = nil
-				downCon:disconnect()
+				downCon:Disconnect()
 			end)
 			mouseDrag.Parent = getLayerCollectorAncestor(scrollbar)
 			doScrollDown()
@@ -2061,7 +2067,7 @@ t.CreateScrollingFrame = function(orderList,scrollStyle)
 			local w = 0.1
 			while scrollStamp == current do
 				doScrollDown()
-				if mouseYPos and mouseYPos < (scrollDrag.AbsolutePosition.y + scrollDrag.AbsoluteSize.x) then
+				if mouseYPos and mouseYPos < (scrollDrag.AbsolutePosition.Y + scrollDrag.AbsoluteSize.X) then
 					break
 				end
 				if not scrollDownButton.Active then break end
@@ -2076,17 +2082,17 @@ t.CreateScrollingFrame = function(orderList,scrollStyle)
 	end
 	
 	local y = 0
-	scrollDrag.MouseButton1Down:connect(function(x,y)
+	scrollDrag.MouseButton1Down:Connect(function(x,y)
 		if scrollDrag.Active then
 			scrollStamp = tick()
-			local mouseOffset = y - scrollDrag.AbsolutePosition.y
+			local mouseOffset = y - scrollDrag.AbsolutePosition.Y
 			local dragCon
 			local upCon
-			dragCon = mouseDrag.MouseMoved:connect(function(x,y)
-				local barAbsPos = scrollbar.AbsolutePosition.y
-				local barAbsSize = scrollbar.AbsoluteSize.y
+			dragCon = mouseDrag.MouseMoved:Connect(function(x,y)
+				local barAbsPos = scrollbar.AbsolutePosition.Y
+				local barAbsSize = scrollbar.AbsoluteSize.Y
 				
-				local dragAbsSize = scrollDrag.AbsoluteSize.y
+				local dragAbsSize = scrollDrag.AbsoluteSize.Y
 				local barAbsOne = barAbsPos + barAbsSize - dragAbsSize
 				y = y - mouseOffset
 				y = y < barAbsPos and barAbsPos or y > barAbsOne and barAbsOne or y
@@ -2117,11 +2123,11 @@ t.CreateScrollingFrame = function(orderList,scrollStyle)
 				scrollPosition = newScrollPosition
 				recalculate(nil)
 			end)
-			upCon = mouseDrag.MouseButton1Up:connect(function()
+			upCon = mouseDrag.MouseButton1Up:Connect(function()
 				scrollStamp = tick()
 				mouseDrag.Parent = nil
-				dragCon:disconnect(); dragCon = nil
-				upCon:disconnect(); drag = nil
+				dragCon:Disconnect(); dragCon = nil
+				upCon:Disconnect(); drag = nil
 			end)
 			mouseDrag.Parent = getLayerCollectorAncestor(scrollbar)
 		end
@@ -2129,52 +2135,52 @@ t.CreateScrollingFrame = function(orderList,scrollStyle)
 
 	local scrollMouseCount = 0
 
-	scrollUpButton.MouseButton1Down:connect(
+	scrollUpButton.MouseButton1Down:Connect(
 		function()
 			scrollUp()
 		end)
-	scrollUpButton.MouseButton1Up:connect(function()
+	scrollUpButton.MouseButton1Up:Connect(function()
 		scrollStamp = tick()
 	end)
 
 
-	scrollDownButton.MouseButton1Up:connect(function()
+	scrollDownButton.MouseButton1Up:Connect(function()
 		scrollStamp = tick()
 	end)
-	scrollDownButton.MouseButton1Down:connect(
+	scrollDownButton.MouseButton1Down:Connect(
 		function()
 			scrollDown()	
 		end)
 		
-	scrollbar.MouseButton1Up:connect(function()
+	scrollbar.MouseButton1Up:Connect(function()
 		scrollStamp = tick()
 	end)
-	scrollbar.MouseButton1Down:connect(
+	scrollbar.MouseButton1Down:Connect(
 		function(x,y)
-			if y > (scrollDrag.AbsoluteSize.y + scrollDrag.AbsolutePosition.y) then
+			if y > (scrollDrag.AbsoluteSize.Y + scrollDrag.AbsolutePosition.Y) then
 				scrollDown(y)
-			elseif y < (scrollDrag.AbsolutePosition.y) then
+			elseif y < (scrollDrag.AbsolutePosition.Y) then
 				scrollUp(y)
 			end
 		end)
 
 
-	frame.ChildAdded:connect(function()
+	frame.ChildAdded:Connect(function()
 		recalculate(nil)
 	end)
 
-	frame.ChildRemoved:connect(function()
+	frame.ChildRemoved:Connect(function()
 		recalculate(nil)
 	end)
 	
-	frame.Changed:connect(
+	frame.Changed:Connect(
 		function(prop)
 			if prop == "AbsoluteSize" then
 				--Wait a heartbeat for it to sync in
 				recalculate(nil)
 			end
 		end)
-	frame.AncestryChanged:connect(function() recalculate(nil) end)
+	frame.AncestryChanged:Connect(function() recalculate(nil) end)
 
 	return frame, scrollUpButton, scrollDownButton, recalculate, scrollbar
 end
@@ -2258,11 +2264,11 @@ t.AutoTruncateTextObject = function(textLabel)
 		if textLabel.TextFits then 
 			--Tear down the rollover if it is active
 			if mouseEnterConnection then
-				mouseEnterConnection:disconnect()
+				mouseEnterConnection:Disconnect()
 				mouseEnterConnection = nil
 			end
 			if mouseLeaveConnection then
-				mouseLeaveConnection:disconnect()
+				mouseLeaveConnection:Disconnect()
 				mouseLeaveConnection = nil
 			end
 		else
@@ -2298,7 +2304,7 @@ t.AutoTruncateTextObject = function(textLabel)
 
 			--Now setup the rollover effects, if they are currently off
 			if mouseEnterConnection == nil then
-				mouseEnterConnection = textLabel.MouseEnter:connect(
+				mouseEnterConnection = textLabel.MouseEnter:Connect(
 					function()
 						fullLabel.ZIndex = textLabel.ZIndex + 1
 						fullLabel.Visible = true
@@ -2306,7 +2312,7 @@ t.AutoTruncateTextObject = function(textLabel)
 					end)
 			end
 			if mouseLeaveConnection == nil then
-				mouseLeaveConnection = textLabel.MouseLeave:connect(
+				mouseLeaveConnection = textLabel.MouseLeave:Connect(
 					function()
 						fullLabel.Visible = false
 						--textLabel.Text = shortText
@@ -2314,8 +2320,8 @@ t.AutoTruncateTextObject = function(textLabel)
 			end
 		end
 	end
-	textLabel.AncestryChanged:connect(checkForResize)
-	textLabel.Changed:connect(
+	textLabel.AncestryChanged:Connect(checkForResize)
+	textLabel.Changed:Connect(
 		function(prop) 
 			if prop == "AbsoluteSize" then 
 				checkForResize() 	
@@ -2467,11 +2473,11 @@ local function CreateBasicTutorialPage(name, handleResize, skipTutorial, giveDon
 	frameHeader.Name = "Header"
 	frameHeader.Text = name
 	frameHeader.BackgroundTransparency = 1
-	frameHeader.FontSize = Enum.FontSize.Size24
+	frameHeader.TextSize = 24
 	frameHeader.Font = Enum.Font.ArialBold
 	frameHeader.TextColor3 = Color3.new(1,1,1)
 	frameHeader.TextXAlignment = Enum.TextXAlignment.Center
-	frameHeader.TextWrap = true
+	frameHeader.TextWrapped = true
 	frameHeader.Size = UDim2.new(1,-55, 0, 22)
 	frameHeader.Position = UDim2.new(0,0,0,0)
 	frameHeader.Parent = frame
@@ -2481,13 +2487,13 @@ local function CreateBasicTutorialPage(name, handleResize, skipTutorial, giveDon
 	skipButton.AutoButtonColor = false
 	skipButton.BackgroundTransparency = 1
 	skipButton.Image = "rbxasset://textures/ui/closeButton.png"
-	skipButton.MouseButton1Click:connect(function()
+	skipButton.MouseButton1Click:Connect(function()
 		skipTutorial()
 	end)
-	skipButton.MouseEnter:connect(function()
+	skipButton.MouseEnter:Connect(function()
 		skipButton.Image = "rbxasset://textures/ui/closeButton_dn.png"
 	end)
-	skipButton.MouseLeave:connect(function()
+	skipButton.MouseLeave:Connect(function()
 		skipButton.Image = "rbxasset://textures/ui/closeButton.png"
 	end)
 	skipButton.Size = UDim2.new(0, 25, 0, 25)
@@ -2502,12 +2508,12 @@ local function CreateBasicTutorialPage(name, handleResize, skipTutorial, giveDon
 		doneButton.Text = "Done"
 		doneButton.TextColor3 = Color3.new(1,1,1)
 		doneButton.Font = Enum.Font.ArialBold
-		doneButton.FontSize = Enum.FontSize.Size18
+		doneButton.TextSize = 18
 		doneButton.Size = UDim2.new(0,100,0,50)
 		doneButton.Position = UDim2.new(0.5,-50,1,-50)
 		
 		if skipTutorial then
-			doneButton.MouseButton1Click:connect(function() skipTutorial() end)
+			doneButton.MouseButton1Click:Connect(function() skipTutorial() end)
 		end
 		
 		doneButton.Parent = frame
@@ -2524,7 +2530,7 @@ local function CreateBasicTutorialPage(name, handleResize, skipTutorial, giveDon
 	nextButton.Text = "Next"
 	nextButton.TextColor3 = Color3.new(1,1,1)
 	nextButton.Font = Enum.Font.Arial
-	nextButton.FontSize = Enum.FontSize.Size18
+	nextButton.TextSize = 18
 	nextButton.Style = Enum.ButtonStyle.RobloxButtonDefault
 	nextButton.Size = UDim2.new(0,80, 0, 32)
 	nextButton.Position = UDim2.new(0.5, 5, 1, -32)
@@ -2537,7 +2543,7 @@ local function CreateBasicTutorialPage(name, handleResize, skipTutorial, giveDon
 	prevButton.Text = "Previous"
 	prevButton.TextColor3 = Color3.new(1,1,1)
 	prevButton.Font = Enum.Font.Arial
-	prevButton.FontSize = Enum.FontSize.Size18
+	prevButton.TextSize = 18
 	prevButton.Style = Enum.ButtonStyle.RobloxButton
 	prevButton.Size = UDim2.new(0,80, 0, 32)
 	prevButton.Position = UDim2.new(0.5, -85, 1, -32)
@@ -2560,15 +2566,15 @@ local function CreateBasicTutorialPage(name, handleResize, skipTutorial, giveDon
 		end
 	end
 
-	frame.Changed:connect(
+	frame.Changed:Connect(
 		function(prop)
 			if prop == "Parent" then
 				if parentConnection ~= nil then
-					parentConnection:disconnect()
+					parentConnection:Disconnect()
 					parentConnection = nil
 				end
 				if frame.Parent and frame.Parent:IsA("GuiObject") then
-					parentConnection = frame.Parent.Changed:connect(
+					parentConnection = frame.Parent.Changed:Connect(
 						function(parentProp)
 							if parentProp == "AbsoluteSize" then
 								wait()
@@ -2595,11 +2601,11 @@ t.CreateTextTutorialPage = function(name, text, skipTutorialFunc)
 	textLabel.BackgroundTransparency = 1
 	textLabel.TextColor3 = Color3.new(1,1,1)
 	textLabel.Text = text
-	textLabel.TextWrap = true
+	textLabel.TextWrapped = true
 	textLabel.TextXAlignment = Enum.TextXAlignment.Left
 	textLabel.TextYAlignment = Enum.TextYAlignment.Center
 	textLabel.Font = Enum.Font.Arial
-	textLabel.FontSize = Enum.FontSize.Size14
+	textLabel.TextSize = 14
 	textLabel.Size = UDim2.new(1,0,1,0)
 
 	local function handleResize(minSize, maxSize)
@@ -2679,7 +2685,7 @@ t.AddTutorialPage = function(tutorial, tutorialPage)
 			if previousPage.NextButton.Active then
 				error("NextButton already Active on previousPage, please only add pages with RbxGui.AddTutorialPage function")
 			end
-			previousPage.NextButton.MouseButton1Click:connect(
+			previousPage.NextButton.MouseButton1Click:Connect(
 				function()
 					TransitionTutorialPages(previousPage, tutorialPage, transitionFrame, currentPageValue)
 				end)
@@ -2689,7 +2695,7 @@ t.AddTutorialPage = function(tutorial, tutorialPage)
 			if tutorialPage.PrevButton.Active then
 				error("PrevButton already Active on tutorialPage, please only add pages with RbxGui.AddTutorialPage function")
 			end
-			tutorialPage.PrevButton.MouseButton1Click:connect(
+			tutorialPage.PrevButton.MouseButton1Click:Connect(
 				function()
 					TransitionTutorialPages(tutorialPage, previousPage, transitionFrame, currentPageValue)
 				end)
@@ -2795,7 +2801,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 		waterForceLabel.BackgroundTransparency = 1
 		waterForceLabel.Size = UDim2.new(1,0,0,12)
 		waterForceLabel.Font = Enum.Font.ArialBold
-		waterForceLabel.FontSize = Enum.FontSize.Size12
+		waterForceLabel.TextSize = 12
 		waterForceLabel.TextColor3 = Color3.new(1,1,1)
 		waterForceLabel.TextXAlignment = Enum.TextXAlignment.Left
 		waterForceLabel.Text = "Water Force"
@@ -2883,10 +2889,10 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 					rolloverText.Size = UDim2.new(1,0,0,48)
 					rolloverText.ZIndex = 6
 					rolloverText.Font = Enum.Font.ArialBold
-					rolloverText.FontSize = Enum.FontSize.Size24
+					rolloverText.TextSize = 24
 					rolloverText.Text = ""
 					rolloverText.TextColor3 = Color3.new(1,1,1)
-					rolloverText.TextWrap = true
+					rolloverText.TextWrapped = true
 					rolloverText.TextXAlignment = Enum.TextXAlignment.Left
 					rolloverText.TextYAlignment = Enum.TextYAlignment.Top
 					rolloverText.Parent = textPanel
@@ -2933,7 +2939,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 				setsHeader.Size = UDim2.new(0,47,0,24)
 				setsHeader.ZIndex = 6
 				setsHeader.Font = Enum.Font.ArialBold
-				setsHeader.FontSize = Enum.FontSize.Size24
+				setsHeader.TextSize = 24
 				setsHeader.Text = "Sets"
 				setsHeader.TextColor3 = Color3.new(1,1,1)
 				setsHeader.TextXAlignment = Enum.TextXAlignment.Left
@@ -2977,7 +2983,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 		setButton.ZIndex = 6
 		setButton.Visible = false
 		setButton.Font = Enum.Font.Arial
-		setButton.FontSize = Enum.FontSize.Size18
+		setButton.TextSize = 18
 		setButton.TextColor3 = Color3.new(1,1,1)
 		setButton.TextXAlignment = Enum.TextXAlignment.Left
 		
@@ -3064,7 +3070,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 		buttonImage.ZIndex = 7
 		buttonImage.Parent = button
 
-		local configIcon = buttonImage:clone()
+		local configIcon = buttonImage:Clone()
 		configIcon.Name = "ConfigIcon"
 		configIcon.Visible = false
 		configIcon.Position = UDim2.new(1,-23,1,-24)
@@ -3098,7 +3104,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 		local dropDownTextButton = Instance.new("TextButton")
 		dropDownTextButton.Name = name .. "Button"
 		dropDownTextButton.Font = Enum.Font.ArialBold
-		dropDownTextButton.FontSize = Enum.FontSize.Size14
+		dropDownTextButton.TextSize = 14
 		dropDownTextButton.BorderSizePixel = 0
 		dropDownTextButton.TextColor3 = Color3.new(1,1,1)
 		dropDownTextButton.Text = name
@@ -3108,17 +3114,17 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 		dropDownTextButton.Size = UDim2.new(0,parent.Size.X.Offset - 2,0,16)
 		dropDownTextButton.Position = UDim2.new(0,1,0,0)
 
-		dropDownTextButton.MouseEnter:connect(function()
+		dropDownTextButton.MouseEnter:Connect(function()
 			dropDownTextButton.BackgroundTransparency = 0
 			dropDownTextButton.TextColor3 = Color3.new(0,0,0)
 		end)
 
-		dropDownTextButton.MouseLeave:connect(function()
+		dropDownTextButton.MouseLeave:Connect(function()
 			dropDownTextButton.BackgroundTransparency = 1
 			dropDownTextButton.TextColor3 = Color3.new(1,1,1)
 		end)
 
-		dropDownTextButton.MouseButton1Click:connect(function()
+		dropDownTextButton.MouseButton1Click:Connect(function()
 			dropDownTextButton.BackgroundTransparency = 1
 			dropDownTextButton.TextColor3 = Color3.new(1,1,1)
 			if dropDownTextButton.Parent and dropDownTextButton.Parent:IsA("GuiObject") then
@@ -3147,7 +3153,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 			dropDown.Size = UDim2.new(0,200,0,dropDown.Size.Y.Offset + (shapeButton.Size.Y.Offset))
 		end
 
-		dropDown.MouseLeave:connect(function()
+		dropDown.MouseLeave:Connect(function()
 			dropDown.Visible = false
 		end)
 	end
@@ -3167,7 +3173,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 			createTerrainDropDownMenu(8)
 		end
 		
-		dropDownButton.MouseButton1Click:connect(function()
+		dropDownButton.MouseButton1Click:Connect(function()
 			setGui.TerrainDropDown.Visible = true
 			setGui.TerrainDropDown.Position = UDim2.new(0,parent.AbsolutePosition.X,0,parent.AbsolutePosition.Y)
 			currTerrainDropDownFrame = parent
@@ -3184,7 +3190,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 		end
 
 		local lastEnter = nil
-		local mouseEnterCon = insertButton.MouseEnter:connect(function()
+		local mouseEnterCon = insertButton.MouseEnter:Connect(function()
 			lastEnter = insertButton
 			delay(0.1,function()
 				if lastEnter == insertButton then
@@ -3222,7 +3228,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 				end)
 			end
 			table.insert(insertButtonCons,
-				insertFrame.Button.MouseButton1Click:connect(function()
+				insertFrame.Button.MouseButton1Click:Connect(function()
 					-- special case for water, show water selection gui
 					local isWaterSelected = (name == "Water") and (Data.Category[Data.CurrentCategory].SetName == "High Scalability")
 					waterGui.Visible = isWaterSelected
@@ -3292,8 +3298,8 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 	local function setSetIndex()
 		Data.Category[Data.CurrentCategory].Index = 0
 
-		rows = 7
-		columns = math.floor(setGui.SetPanel.ItemsFrame.AbsoluteSize.X/buttonWidth)
+		local rows = 7
+		local columns = math.floor(setGui.SetPanel.ItemsFrame.AbsoluteSize.X/buttonWidth)
 
 		contents = Data.Category[Data.CurrentCategory].Contents
 		if contents then
@@ -3302,7 +3308,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 				insertButtons[i]:remove()
 			end
 			for i = 1, #insertButtonCons do
-				if insertButtonCons[i] then insertButtonCons[i]:disconnect() end
+				if insertButtonCons[i] then insertButtonCons[i]:Disconnect() end
 			end
 			insertButtonCons = {}
 			insertButtons = {}
@@ -3381,19 +3387,19 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 				button.BackgroundTransparency = 0
 			end
 
-			button.MouseEnter:connect(function()
+			button.MouseEnter:Connect(function()
 				if not button.Selected then
 					button.BackgroundTransparency = 0
 					button.TextColor3 = Color3.new(0,0,0)
 				end
 			end)
-			button.MouseLeave:connect(function()
+			button.MouseLeave:Connect(function()
 				if not button.Selected then
 					button.BackgroundTransparency = 1
 					button.TextColor3 = Color3.new(1,1,1)
 				end
 			end)
-			button.MouseButton1Click:connect(function()
+			button.MouseButton1Click:Connect(function()
 				resetAllSetButtonSelection()
 				button.Selected = not button.Selected
 				button.BackgroundColor3 = Color3.new(0,204/255,0)
@@ -3423,7 +3429,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 	waterGui, waterTypeChangedEvent = createWaterGui()
 	waterGui.Position = UDim2.new(0,55,0,0)
 	waterGui.Parent = setGui
-	setGui.Changed:connect(function(prop) -- this resizes the preview image to always be the right size
+	setGui.Changed:Connect(function(prop) -- this resizes the preview image to always be the right size
 		if prop == "AbsoluteSize" then
 			handleResize()
 			setSetIndex()
@@ -3444,7 +3450,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 	controlFrame.Position = UDim2.new(0.76, 5, 0, 0)
 
 	local debounce = false
-	controlFrame.ScrollBottom.Changed:connect(function(prop)
+	controlFrame.ScrollBottom.Changed:Connect(function(prop)
 		if controlFrame.ScrollBottom.Value == true then
 			if debounce then return end
 			debounce = true
@@ -3477,7 +3483,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 
 	populateSetsFrame()
 
-	setGui.SetPanel.CancelButton.MouseButton1Click:connect(function()
+	setGui.SetPanel.CancelButton.MouseButton1Click:Connect(function()
 		setGui.SetPanel.Visible = false
 		if dialogClosed then dialogClosed() end
 	end)
@@ -3653,15 +3659,15 @@ t.CreateTerrainMaterialSelector = function(size,position)
 		enumType.Parent = buttonWrap
 		enumType.Value = 0
 		
-		imageButton.MouseEnter:connect(function()
+		imageButton.MouseEnter:Connect(function()
 			buttonWrap.BackgroundTransparency = 0
 		end)
-		imageButton.MouseLeave:connect(function()
+		imageButton.MouseLeave:Connect(function()
 			if selectedButton ~= buttonWrap then
 				buttonWrap.BackgroundTransparency = 1
 			end
 		end)
-		imageButton.MouseButton1Click:connect(function()
+		imageButton.MouseButton1Click:Connect(function()
 			if selectedButton ~= buttonWrap then
 				goToNewMaterial(buttonWrap, tostring(name))
 			end
@@ -3697,7 +3703,7 @@ t.CreateTerrainMaterialSelector = function(size,position)
 		end
 	end
 
-	frame.Changed:connect(function ( prop )
+	frame.Changed:Connect(function ( prop )
 		if prop == "AbsoluteSize" then
 			recalculateScroll()
 		end
@@ -3742,7 +3748,7 @@ t.CreateLoadingFrame = function(name,size,position)
 		loadingPercent.Size = UDim2.new(1,0,0,14)
 		loadingPercent.Font = Enum.Font.Arial
 		loadingPercent.Text = "0%"
-		loadingPercent.FontSize = Enum.FontSize.Size14
+		loadingPercent.TextSize = 14
 		loadingPercent.TextColor3 = Color3.new(1,1,1)
 		loadingPercent.Parent = loadingBar
 
@@ -3751,7 +3757,7 @@ t.CreateLoadingFrame = function(name,size,position)
 	cancelButton.Position = UDim2.new(0.5,-60,1,-40)
 	cancelButton.Size = UDim2.new(0,120,0,40)
 	cancelButton.Font = Enum.Font.Arial
-	cancelButton.FontSize = Enum.FontSize.Size18
+	cancelButton.TextSize = 18
 	cancelButton.TextColor3 = Color3.new(1,1,1)
 	cancelButton.Text = "Cancel"
 	cancelButton.Style = Enum.ButtonStyle.RobloxButton
@@ -3766,13 +3772,13 @@ t.CreateLoadingFrame = function(name,size,position)
 	loadingName.Text = name
 	loadingName.TextColor3 = Color3.new(1,1,1)
 	loadingName.TextStrokeTransparency = 1
-	loadingName.FontSize = Enum.FontSize.Size18
+	loadingName.TextSize = 18
 	loadingName.Parent = loadingFrame
 
 	local cancelButtonClicked = Instance.new("BindableEvent")
 	cancelButtonClicked.Name = "CancelButtonClicked"
 	cancelButtonClicked.Parent = cancelButton
-	cancelButton.MouseButton1Click:connect(function()
+	cancelButton.MouseButton1Click:Connect(function()
 		cancelButtonClicked:Fire()
 	end)
 
@@ -3821,7 +3827,7 @@ t.CreateLoadingFrame = function(name,size,position)
 		end
 	end
 
-	loadingGreenBar.Changed:connect(function(prop)
+	loadingGreenBar.Changed:Connect(function(prop)
 		if prop == "Size" then
 			loadingPercent.Text = tostring( math.ceil(loadingGreenBar.Size.X.Scale * 100) ) .. "%"
 		end
@@ -3845,11 +3851,11 @@ t.CreatePluginFrame = function (name,size,position,scrollable,parent)
 		button.BorderSizePixel = 0
 		button.BackgroundColor3 = Color3.new(20/255,20/255,20/255)
 
-		button.MouseEnter:connect(function ( )
+		button.MouseEnter:Connect(function ( )
 			if button.Selected then return end
 			button.BackgroundTransparency = 0
 		end)
-		button.MouseLeave:connect(function ( )
+		button.MouseLeave:Connect(function ( )
 			if button.Selected then return end
 			button.BackgroundTransparency = 1
 		end)
@@ -3873,10 +3879,10 @@ t.CreatePluginFrame = function (name,size,position,scrollable,parent)
 	dragBar.Active = true
 	dragBar.Draggable = true
 	--dragBar.Visible = false
-	dragBar.MouseEnter:connect(function (  )
+	dragBar.MouseEnter:Connect(function (  )
 		dragBar.BackgroundColor3 = Color3.new(49/255,49/255,49/255)
 	end)
-	dragBar.MouseLeave:connect(function (  )
+	dragBar.MouseLeave:Connect(function (  )
 		dragBar.BackgroundColor3 = Color3.new(39/255,39/255,39/255)
 	end)
 
@@ -3888,7 +3894,7 @@ t.CreatePluginFrame = function (name,size,position,scrollable,parent)
 	pluginNameLabel.TextStrokeTransparency = 0
 	pluginNameLabel.Size = UDim2.new(1,0,1,0)
 	pluginNameLabel.Font = Enum.Font.ArialBold
-	pluginNameLabel.FontSize = Enum.FontSize.Size18
+	pluginNameLabel.TextSize = 18
 	pluginNameLabel.TextXAlignment = Enum.TextXAlignment.Left
 	pluginNameLabel.BackgroundTransparency = 1
 
@@ -3897,7 +3903,7 @@ t.CreatePluginFrame = function (name,size,position,scrollable,parent)
 	local closeEvent = Instance.new("BindableEvent")
 	closeEvent.Name = "CloseEvent"
 	closeEvent.Parent = closeButton
-	closeButton.MouseButton1Click:connect(function ()
+	closeButton.MouseButton1Click:Connect(function ()
 		closeEvent:Fire()
 		closeButton.BackgroundTransparency = 1
 	end)
@@ -3913,7 +3919,7 @@ t.CreatePluginFrame = function (name,size,position,scrollable,parent)
 	helpFrame.BorderSizePixel = 0
 	helpFrame.Visible = false
 
-	helpButton.MouseButton1Click:connect(function(  )
+	helpButton.MouseButton1Click:Connect(function(  )
 		helpFrame.Visible = not helpFrame.Visible
 		if helpFrame.Visible then
 			helpButton.Selected = true
@@ -3955,7 +3961,7 @@ t.CreatePluginFrame = function (name,size,position,scrollable,parent)
 	minimizeBigButton.Size = UDim2.new(0,100,0,40)
 	minimizeBigButton.Style = Enum.ButtonStyle.RobloxButton
 	minimizeBigButton.Font = Enum.Font.ArialBold
-	minimizeBigButton.FontSize = Enum.FontSize.Size18
+	minimizeBigButton.TextSize = 18
 	minimizeBigButton.TextColor3 = Color3.new(1,1,1)
 	minimizeBigButton.Text = "Show"
 
@@ -3966,7 +3972,7 @@ t.CreatePluginFrame = function (name,size,position,scrollable,parent)
 	separatingLine.Position = UDim2.new(1,-18,0.5,-7)
 	separatingLine.Size = UDim2.new(0,1,0,14)
 
-	local otherSeparatingLine = separatingLine:clone()
+	local otherSeparatingLine = separatingLine:Clone()
 	otherSeparatingLine.Position = UDim2.new(1,-35,0.5,-7)
 	otherSeparatingLine.Parent = dragBar
 
@@ -4043,10 +4049,10 @@ t.CreatePluginFrame = function (name,size,position,scrollable,parent)
 		scrubFrame.Position = UDim2.new(0.5,-5,0.5,0)
 		scrubFrame.Size = UDim2.new(0,10,0,1)
 		scrubFrame.ZIndex = 5
-		local scrubTwo = scrubFrame:clone()
+		local scrubTwo = scrubFrame:Clone()
 		scrubTwo.Position = UDim2.new(0.5,-5,0.5,-2)
 		scrubTwo.Parent = verticalDragger
-		local scrubThree = scrubFrame:clone()
+		local scrubThree = scrubFrame:Clone()
 		scrubThree.Position = UDim2.new(0.5,-5,0.5,2)
 		scrubThree.Parent = verticalDragger
 
@@ -4062,22 +4068,22 @@ t.CreatePluginFrame = function (name,size,position,scrollable,parent)
 
 		local draggingVertical = false
 		local startYPos = nil
-		verticalDragger.MouseEnter:connect(function ()
+		verticalDragger.MouseEnter:Connect(function ()
 			verticalDragger.BackgroundColor3 = Color3.new(60/255,60/255,60/255)
 		end)
-		verticalDragger.MouseLeave:connect(function ()
+		verticalDragger.MouseLeave:Connect(function ()
 			verticalDragger.BackgroundColor3 = Color3.new(50/255,50/255,50/255)
 		end)
-		verticalDragger.MouseButton1Down:connect(function(x,y)
+		verticalDragger.MouseButton1Down:Connect(function(x,y)
 			draggingVertical = true
 			areaSoak.Visible = true
 			startYPos = y
 		end)
-		areaSoak.MouseButton1Up:connect(function (  )
+		areaSoak.MouseButton1Up:Connect(function (  )
 			draggingVertical = false
 			areaSoak.Visible = false
 		end)
-		areaSoak.MouseMoved:connect(function(x,y)
+		areaSoak.MouseMoved:Connect(function(x,y)
 			if not draggingVertical then return end
 
 			local yDelta = y - startYPos
@@ -4117,11 +4123,11 @@ t.CreatePluginFrame = function (name,size,position,scrollable,parent)
 		end
 	end
 
-	minimizeBigButton.MouseButton1Click:connect(function (  )
+	minimizeBigButton.MouseButton1Click:Connect(function (  )
 		switchMinimize()
 	end)
 
-	minimizeButton.MouseButton1Click:connect(function(  )
+	minimizeButton.MouseButton1Click:Connect(function(  )
 		switchMinimize()
 	end)
 

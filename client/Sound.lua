@@ -1,5 +1,7 @@
 --!native
 --!optimize 2
+--!strict
+
 local function characterAdded(char)
 	-- util
 
@@ -89,7 +91,9 @@ local function playerAdded(p)
 end
 game.Players.PlayerAdded:Connect(playerAdded)
 for i,v in pairs(game.Players:GetPlayers()) do
-	playerAdded(v)
+	task.spawn(function()
+		playerAdded(v)
+	end)
 end
 
 return ""

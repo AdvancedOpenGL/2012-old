@@ -1,5 +1,8 @@
 --!native
 --!optimize 2
+local wait = task.wait
+local spawn = task.spawn
+local delay = task.delay
 return function()
 	-- peace out if we aren't using the right client
 

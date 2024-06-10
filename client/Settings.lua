@@ -1,5 +1,8 @@
 --!native
 --!optimize 2
+local wait = task.wait
+local spawn = task.spawn
+local delay = task.delay
 return function()
     local function waitForChild(instance, name)
         while not instance:FindFirstChild(name) do

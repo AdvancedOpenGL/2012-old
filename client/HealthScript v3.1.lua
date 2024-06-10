@@ -1,5 +1,6 @@
 --!native
 --!optimize 2
+--!strict
 local HealthGUI_prototype = Instance.new("ScreenGui")
 HealthGUI_prototype.Name = "HealthGUI"
 HealthGUI_prototype.ResetOnSpawn = false
@@ -13,7 +14,7 @@ local maxWidth = 0.96
 
 local humanoid
 
-function CreateGUI()
+local function CreateGUI()
 	local p = game.Players.LocalPlayer
 	local tray = Instance.new("Frame",frame)
 	tray.Size = UDim2.fromOffset(170,18)
@@ -75,7 +76,7 @@ function CreateGUI()
 	HealthGUI_prototype.Parent = p.PlayerGui
 end
 
-function UpdateGUI(health)
+local function UpdateGUI(health : number)
 	local tray = frame.tray
 	local width = (health / humanoid.MaxHealth) * maxWidth
 	local height = 0.83
@@ -111,7 +112,7 @@ function UpdateGUI(health)
 end
 
 
-function HealthChanged(health)
+local function HealthChanged(health)
 	UpdateGUI(health)
 	if ( (lastHealth2 - health) > (humanoid.MaxHealth / 10) ) then
 		lastHealth2 = health
@@ -120,8 +121,8 @@ function HealthChanged(health)
 	end
 end
 
-function AnimateBars(x, y, lastX, height)
-	tray = frame.tray
+local function AnimateBars(x : number, y : number, lastX : number, height : number)
+	local tray = frame.tray
 	local width = math.abs(x - lastX)
 	if( x > lastX ) then
 		x = lastX
@@ -148,7 +149,7 @@ function AnimateBars(x, y, lastX, height)
 	end
 end
 
-function AnimateHurtOverlay()
+local function AnimateHurtOverlay()
 	-- Start:
 	-- overlay.Position = UDim2.new(0, 0, 0, -22)
 	-- overlay.Size = UDim2.new(1, 0, 1.15, 30)
@@ -157,7 +158,7 @@ function AnimateHurtOverlay()
 	-- overlay.Position = UDim2.new(-2, 0, -2, -22)
 	-- overlay.Size = UDim2.new(4.5, 0, 4.65, 30)
 	
-	overlay = frame.hurtOverlay
+	local overlay = frame.hurtOverlay
 	overlay.Position = UDim2.new(-2, 0, -2, -22)
 	overlay.Size = UDim2.new(4.5, 0, 4.65, 30)
 	-- Animate In, fast

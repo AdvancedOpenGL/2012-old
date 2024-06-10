@@ -1,5 +1,9 @@
 --!native
 --!optimize 2
+--!strict
+local wait = task.wait
+local spawn = task.spawn
+local delay = task.delay
 return function()
 	--if game.CoreGui.Version < 3 then return end -- peace out if we aren't using the right client
 
@@ -122,7 +126,7 @@ return function()
 	local LoadoutButton = Instance.new("TextButton")
 	LoadoutButton.Name = "LoadoutButton"
 	LoadoutButton.Font = Enum.Font.ArialBold
-	LoadoutButton.FontSize = Enum.FontSize.Size14
+	LoadoutButton.TextSize = 14
 	LoadoutButton.Position = UDim2.new(0,0,0,0)
 	LoadoutButton.Size = UDim2.new(1,0,0,32)
 	LoadoutButton.Style = Enum.ButtonStyle.RobloxButton
@@ -130,15 +134,15 @@ return function()
 	LoadoutButton.TextColor3 = Color3.new(1,1,1)
 	LoadoutButton.Parent = scrollFrameLoadout
 
-	local LoadoutButtonTwo = LoadoutButton:clone()
+	local LoadoutButtonTwo = LoadoutButton:Clone()
 	LoadoutButtonTwo.Text = "Loadout #2"
 	LoadoutButtonTwo.Parent = scrollFrameLoadout
 
-	local LoadoutButtonThree = LoadoutButton:clone()
+	local LoadoutButtonThree = LoadoutButton:Clone()
 	LoadoutButtonThree.Text = "Loadout #3"
 	LoadoutButtonThree.Parent = scrollFrameLoadout
 
-	local LoadoutButtonFour = LoadoutButton:clone()
+	local LoadoutButtonFour = LoadoutButton:Clone()
 	LoadoutButtonFour.Text = "Loadout #4"
 	LoadoutButtonFour.Parent = scrollFrameLoadout
 
@@ -156,9 +160,16 @@ return function()
 	scrollUpLoadout.Parent = backpack.Gear.GearLoadouts.GearLoadoutsScrollingArea
 	scrollDownLoadout.Parent = backpack.Gear.GearLoadouts.GearLoadoutsScrollingArea
 
-
+	
+	--Functions
+	local resizeGrid
+	local updateGridActive
+	local swapGearSlot
+	local getGearContextMenu
+	
+	
 	-- Begin Functions
-	function removeFromMap(map,object)
+	local function removeFromMap(map,object)
 		for i = 1, #map do
 			if map[i] == object then
 				table.remove(map,i)
@@ -167,16 +178,11 @@ return function()
 		end
 	end
 
-	function robloxLock(instance)
-		children = instance:GetChildren()
-		if children then
-			for i, child in ipairs(children) do
-				robloxLock(child)
-			end
-		end
+	local function robloxLock(instance)
+		return
 	end
 
-	function resize()
+	local function resize()
 		local size = 0
 		if gearPreview.AbsoluteSize.Y > gearPreview.AbsoluteSize.X then
 			size = gearPreview.AbsoluteSize.X * 0.75
@@ -190,7 +196,7 @@ return function()
 		resizeGrid()
 	end
 
-	function addToGrid(child)
+	local function addToGrid(child)
 		if not child:IsA("Tool") then
 			if not child:IsA("HopperBin") then 
 				return
@@ -204,7 +210,7 @@ return function()
 
 		table.insert(backpackItems,child)
 
-		local changeCon = child.Changed:connect(function(prop)
+		local changeCon = child.Changed:Connect(function(prop)
 			if prop == "Name" then
 				if buttons[child] then
 					if buttons[child].Image == "" then
@@ -214,7 +220,7 @@ return function()
 			end
 		end)
 		local ancestryCon = nil
-		ancestryCon = child.AncestryChanged:connect(function(theChild,theParent)
+		ancestryCon = child.AncestryChanged:Connect(function(theChild,theParent)
 			local thisObject = nil
 			for k,v in pairs(backpackItems) do
 				if v == child then
@@ -250,21 +256,21 @@ return function()
 		resizeGrid()
 	end
 
-	function buttonClick(button)
+	local function buttonClick(button)
 		if button:FindFirstChild("UnequipContextMenu") and not button.Active then
 			button.UnequipContextMenu.Visible = true
 			browsingMenu = true
 		end
 	end
 
-	function previewGear(button)
+	local function previewGear(button)
 		if not browsingMenu then
 			gearPreview.GearImage.Image = button.Image
 			gearPreview.GearStats.GearName.Text = button.GearReference.Value.Name
 		end
 	end
 
-	function findEmptySlot()
+	local function findEmptySlot()
 		local smallestNum = nil
 		local loadout = currentLoadout:GetChildren()
 		for i = 1, #loadout do
@@ -280,13 +286,13 @@ return function()
 		return smallestNum
 	end
 
-	function checkForSwap(button,x,y)
+	local function checkForSwap(button,x,y)
 		local loadoutChildren = currentLoadout:GetChildren()
 		for i = 1, #loadoutChildren do
 			if loadoutChildren[i]:IsA("Frame") and string.find(loadoutChildren[i].Name,"Slot") then
 				if x >= loadoutChildren[i].AbsolutePosition.x and x <= (loadoutChildren[i].AbsolutePosition.x + loadoutChildren[i].AbsoluteSize.x) then
 					if y >= loadoutChildren[i].AbsolutePosition.y and y <= (loadoutChildren[i].AbsolutePosition.y + loadoutChildren[i].AbsoluteSize.y) then
-						local slot = tonumber(string.sub(loadoutChildren[i].Name,5))
+						local slot = assert(tonumber(string.sub(loadoutChildren[i].Name,5)))
 						swapGearSlot(slot,button)
 						return true
 					end
@@ -300,7 +306,7 @@ return function()
 		for k,v in pairs(backpackItems) do
 			if not v:FindFirstChild("RobloxBuildTool") then
 				if not buttons[v] then
-					local buttonClone = gearButton:clone()
+					local buttonClone = gearButton:Clone()
 					buttonClone.Parent = grid.ScrollingFrame
 					buttonClone.Visible = true
 					buttonClone.Image = v.TextureId
@@ -318,11 +324,11 @@ return function()
 					unequipMenu.Parent = buttonClone
 
 					local beginPos = nil
-					buttonClone.DragBegin:connect(function(value)
+					buttonClone.DragBegin:Connect(function(value)
 						buttonClone.ZIndex = 9
 						beginPos = value
 					end)
-					buttonClone.DragStopped:connect(function(x,y)
+					buttonClone.DragStopped:Connect(function(x,y)
 						if beginPos ~= buttonClone.Position then
 							buttonClone.ZIndex = 1
 							if not checkForSwap(buttonClone,x,y) then
@@ -337,8 +343,8 @@ return function()
 						end	
 					end)
 					local clickTime = tick()
-					mouseEnterCons[buttonClone] = buttonClone.MouseEnter:connect(function() previewGear(buttonClone) end)
-					mouseClickCons[buttonClone] = buttonClone.MouseButton1Click:connect(function()
+					mouseEnterCons[buttonClone] = buttonClone.MouseEnter:Connect(function() previewGear(buttonClone) end)
+					mouseClickCons[buttonClone] = buttonClone.MouseButton1Click:Connect(function()
 						local newClickTime = tick()
 						if buttonClone.Active and (newClickTime - clickTime) < 0.5 then
 							local slot = findEmptySlot()
@@ -356,7 +362,7 @@ return function()
 		recalculateScroll()
 	end
 
-	function showPartialGrid(subset)
+	local function showPartialGrid(subset)
 
 		resetFrame.Visible = true
 
@@ -369,7 +375,7 @@ return function()
 		recalculateScroll()
 	end
 
-	function showEntireGrid()
+	local function showEntireGrid()
 		resetFrame.Visible = false
 
 		for k,v in pairs(buttons) do
@@ -378,7 +384,7 @@ return function()
 		recalculateScroll()
 	end
 
-	function inLoadout(gear)
+	local function inLoadout(gear)
 		local children = currentLoadout:GetChildren()
 		for i = 1, #children do
 			if children[i]:IsA("Frame") then
@@ -412,7 +418,7 @@ return function()
 		end
 	end
 
-	function centerGear(loadoutChildren)
+	local function centerGear(loadoutChildren)
 		local gearButtons = {}
 		local lastSlotAdd = nil
 		for i = 1, #loadoutChildren do
@@ -432,17 +438,17 @@ return function()
 		end
 	end
 
-	function spreadOutGear(loadoutChildren)
+	local function spreadOutGear(loadoutChildren)
 		for i = 1, #loadoutChildren do
 			if loadoutChildren[i]:IsA("Frame") then
-				local slot = tonumber(string.sub(loadoutChildren[i].Name,5))
+				local slot = assert(tonumber(string.sub(loadoutChildren[i].Name,5)))
 				if slot == 0 then slot = 10 end
 				loadoutChildren[i]:TweenPosition(UDim2.new((slot - 1)/10,0,0,0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25, true)
 			end
 		end
 	end
 
-	function openCloseBackpack()
+	local function openCloseBackpack()
 		if openCloseDebounce then return end
 		openCloseDebounce = true
 
@@ -479,7 +485,7 @@ return function()
 					children[i].Visible = false
 				end
 			end
-			loadoutChildren = currentLoadout:GetChildren()
+			local loadoutChildren = currentLoadout:GetChildren()
 			for i = 1, #loadoutChildren do
 				if loadoutChildren[i]:IsA("Frame") then
 					loadoutChildren[i].BackgroundTransparency = 1
@@ -499,7 +505,7 @@ return function()
 		end
 	end
 
-	function loadoutCheck(child, selectState)
+	local function loadoutCheck(child, selectState)
 		if not child:IsA("ImageButton") then return end
 		for k,v in pairs(backpackItems) do
 			if buttons[v] then
@@ -513,12 +519,12 @@ return function()
 		end
 	end
 
-	function clearPreview()
+	local function clearPreview()
 		gearPreview.GearImage.Image = ""
 		gearPreview.GearStats.GearName.Text = ""
 	end
 
-	function removeAllEquippedGear(physGear)
+	local function removeAllEquippedGear(physGear)
 		local stuff = player.Character:GetChildren()
 		for i = 1, #stuff do
 			if ( stuff[i]:IsA("Tool") or stuff[i]:IsA("HopperBin") ) and stuff[i] ~= physGear then
@@ -527,22 +533,22 @@ return function()
 		end
 	end
 
-	function equipGear(physGear)
+	local function equipGear(physGear)
 		removeAllEquippedGear(physGear)
 		physGear.Parent = player.Character
 		updateGridActive()
 	end
 
-	function unequipGear(physGear)
+	local function unequipGear(physGear : Instance)
 		physGear.Parent = playerBackpack
 		updateGridActive()
 	end
 
-	function highlight(button)
+	local function highlight(button)
 		button.TextColor3 = Color3.new(0,0,0)
 		button.BackgroundColor3 = Color3.new(0.8,0.8,0.8)
 	end
-	function clearHighlight(button)
+	local function clearHighlight(button)
 		button.TextColor3 = Color3.new(1,1,1)
 		button.BackgroundColor3 = Color3.new(0,0,0)
 	end
@@ -580,17 +586,17 @@ return function()
 	end
 
 	-- these next two functions are used to stop any use of backpack while the player is dead (can cause issues)
-	function activateBackpack()
+	local function activateBackpack()
 		backpack.Visible = backpackOldStateVisible
 
-		backpackButtonClickCon = backpackButton.MouseButton1Click:connect(function() openCloseBackpack() end)
+		backpackButtonClickCon = backpackButton.MouseButton1Click:Connect(function() openCloseBackpack() end)
 		guiServiceKeyPressCon = game:GetService("UserInputService").InputBegan:Connect(function(key,sank)
 			if key.KeyCode == Enum.KeyCode.Tilde or key.KeyCode == Enum.KeyCode.Backquote and not sank then
 				openCloseBackpack()
 			end
 		end)
 	end
-	function deactivateBackpack()
+	local function deactivateBackpack()
 		if backpackButtonClickCon then backpackButtonClickCon:Disconnect() end
 		if guiServiceKeyPressCon then guiServiceKeyPressCon:Disconnect() end
 
@@ -598,10 +604,10 @@ return function()
 		backpack.Visible = false
 	end
 
-	function setupCharacterConnections()
+	local function setupCharacterConnections()
 
 		if backpackAddCon then backpackAddCon:disconnect() end
-		backpackAddCon = game.Players.LocalPlayer.Backpack.ChildAdded:connect(function(child) addToGrid(child) end)
+		backpackAddCon = game.Players.LocalPlayer.Backpack.ChildAdded:Connect(function(child) addToGrid(child) end)
 
 		-- make sure we get all the children
 		local backpackChildren = game.Players.LocalPlayer.Backpack:GetChildren()
@@ -611,14 +617,14 @@ return function()
 
 		if characterChildAddedCon then characterChildAddedCon:disconnect() end
 		characterChildAddedCon = 
-			game.Players.LocalPlayer.Character.ChildAdded:connect(function(child)
+			game.Players.LocalPlayer.Character.ChildAdded:Connect(function(child)
 				addToGrid(child)
 				updateGridActive()
 			end)
 
 		if characterChildRemovedCon then characterChildRemovedCon:disconnect() end
 		characterChildRemovedCon = 
-			game.Players.LocalPlayer.Character.ChildRemoved:connect(function(child)
+			game.Players.LocalPlayer.Character.ChildRemoved:Connect(function(child)
 				updateGridActive()
 			end)
 
@@ -629,23 +635,23 @@ return function()
 			task.wait()
 		end
 		localPlayer.Character:WaitForChild("Humanoid")
-		humanoidDiedCon = game.Players.LocalPlayer.Character.Humanoid.Died:connect(function() deactivateBackpack() end)
+		humanoidDiedCon = game.Players.LocalPlayer.Character.Humanoid.Died:Connect(function() deactivateBackpack() end)
 
 		activateBackpack()
 	end
 
-	function removeCharacterConnections()
+	local function removeCharacterConnections()
 		if characterChildAddedCon then characterChildAddedCon:disconnect() end
 		if characterChildRemovedCon then characterChildRemovedCon:disconnect() end
 		if backpackAddCon then backpackAddCon:disconnect() end
 	end
 
-	function trim(s)
+	local function trim(s)
 		return (s:gsub("^%s*(.-)%s*$", "%1"))
 	end
 
-	function splitByWhiteSpace(text)
-		if type(text) ~= "string" then return nil end
+	local function splitByWhiteSpace(text : string)
+		if type(text) ~= "string" then return {} end
 
 		local terms = {}
 		for token in string.gmatch(text, "[^%s]+") do
@@ -656,10 +662,10 @@ return function()
 		return terms
 	end
 
-	function filterGear(searchTerm)
+	local function filterGear(searchTerm)
 		string.lower(searchTerm)
 		searchTerm = trim(searchTerm)
-		if string.len(searchTerm) < 2 then return nil end
+		if string.len(searchTerm) < 2 then return {} end
 		local terms = splitByWhiteSpace(searchTerm)
 
 		local filteredGear = {}
@@ -680,7 +686,7 @@ return function()
 	end
 
 
-	function showSearchGear()
+	local function showSearchGear()
 		local searchText = searchBox.Text
 		searchBox.Text = "Search..."
 		local filteredButtons = filterGear(searchText)
@@ -691,7 +697,7 @@ return function()
 		end
 	end
 
-	function nukeBackpack()
+	local function nukeBackpack()
 		while #buttons > 0 do
 			table.remove(buttons)
 		end
@@ -748,14 +754,14 @@ return function()
 				button.TextXAlignment = Enum.TextXAlignment.Left
 				button.Text = " " .. contextElement.Text
 				button.Font = Enum.Font.Arial
-				button.FontSize = Enum.FontSize.Size14
+				button.TextSize = 14
 				button.Size = UDim2.new(1, 8, 0, elementHeight)
 				button.Position = UDim2.new(0,0,0,elementHeight * i)
 				button.TextColor3 = Color3.new(1,1,1)
 				button.ZIndex = 4
 				button.Parent = gearContextMenuButton
 
-				button.MouseButton1Click:connect(function()
+				button.MouseButton1Click:Connect(function()
 					if button.Active and not gearContextMenu.Parent.Active then
 						local success, result = pcall(function() element.DoIt(element, gearContextMenu) end)
 						browsingMenu = false
@@ -765,12 +771,12 @@ return function()
 					end
 				end)
 
-				button.MouseEnter:connect(function()
+				button.MouseEnter:Connect(function()
 					if button.Active and gearContextMenu.Parent.Active then
 						highlight(button)
 					end
 				end)
-				button.MouseLeave:connect(function()
+				button.MouseLeave:Connect(function()
 					if button.Active and gearContextMenu.Parent.Active then
 						clearHighlight(button)
 					end
@@ -791,7 +797,7 @@ return function()
 				label.BorderSizePixel = 0
 				label.TextXAlignment = Enum.TextXAlignment.Left
 				label.Font = Enum.Font.ArialBold
-				label.FontSize = Enum.FontSize.Size14
+				label.TextSize = 14
 				label.Position = UDim2.new(0.0, 0, 0, 0)
 				label.Size = UDim2.new(0.5, 0, 1, 0)
 				label.TextColor3 = Color3.new(1,1,1)
@@ -807,7 +813,7 @@ return function()
 					label.BorderSizePixel = 0
 					label.TextXAlignment = Enum.TextXAlignment.Right
 					label.Font = Enum.Font.Arial
-					label.FontSize = Enum.FontSize.Size14
+					label.TextSize = 14
 					label.Position = UDim2.new(0.5, 0, 0, 0)
 					label.Size = UDim2.new(0.5, 0, 1, 0)
 					label.TextColor3 = Color3.new(1,1,1)
@@ -822,7 +828,7 @@ return function()
 		end
 
 		gearContextMenu.ZIndex = 4
-		gearContextMenu.MouseLeave:connect(function()
+		gearContextMenu.MouseLeave:Connect(function()
 			browsingMenu = false
 			gearContextMenu.Visible = false
 			clearPreview()
@@ -838,7 +844,7 @@ return function()
 	end
 
 	------------------------- Start Lifelong Connections -----------------------
-	screen.Changed:connect(function(prop)
+	screen.Changed:Connect(function(prop)
 		if prop == "AbsoluteSize" then
 			if debounce then return end
 			debounce = true
@@ -849,45 +855,45 @@ return function()
 		end
 	end)
 
-	currentLoadout.ChildAdded:connect(function(child) loadoutCheck(child, false) end)
-	currentLoadout.ChildRemoved:connect(function(child) loadoutCheck(child, true) end)
+	currentLoadout.ChildAdded:Connect(function(child) loadoutCheck(child, false) end)
+	currentLoadout.ChildRemoved:Connect(function(child) loadoutCheck(child, true) end)
 
-	currentLoadout.DescendantAdded:connect(function(descendant)
+	currentLoadout.DescendantAdded:Connect(function(descendant)
 		if not backpack.Visible and ( descendant:IsA("ImageButton") or descendant:IsA("TextButton") ) then
 			centerGear(currentLoadout:GetChildren())
 		end
 	end)
-	currentLoadout.DescendantRemoving:connect(function(descendant)
+	currentLoadout.DescendantRemoving:Connect(function(descendant)
 		if not backpack.Visible and ( descendant:IsA("ImageButton") or descendant:IsA("TextButton") ) then
 			wait()
 			centerGear(currentLoadout:GetChildren())
 		end
 	end)
 
-	grid.MouseEnter:connect(function() clearPreview() end)
-	grid.MouseLeave:connect(function() clearPreview() end)
+	grid.MouseEnter:Connect(function() clearPreview() end)
+	grid.MouseLeave:Connect(function() clearPreview() end)
 
-	player.CharacterRemoving:connect(function()
+	player.CharacterRemoving:Connect(function()
 		removeCharacterConnections()
 		nukeBackpack()
 	end)
-	player.CharacterAdded:connect(function() setupCharacterConnections() end)
+	player.CharacterAdded:Connect(function() setupCharacterConnections() end)
 
-	player.ChildAdded:connect(function(child)
+	player.ChildAdded:Connect(function(child)
 		if child:IsA("Backpack") then
 			playerBackpack = child
 			if backpackAddCon then backpackAddCon:disconnect() end
-			backpackAddCon = game.Players.LocalPlayer.Backpack.ChildAdded:connect(function(child) addToGrid(child) end)
+			backpackAddCon = game.Players.LocalPlayer.Backpack.ChildAdded:Connect(function(child) addToGrid(child) end)
 		end
 	end)
 
-	swapSlot.Changed:connect(function()
+	swapSlot.Changed:Connect(function()
 		if not swapSlot.Value then
 			updateGridActive()
 		end
 	end)
 
-	searchBox.FocusLost:connect(function(enterPressed)
+	searchBox.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
 			showSearchGear()
 		end
@@ -896,20 +902,20 @@ return function()
 	local loadoutChildren = currentLoadout:GetChildren()
 	for i = 1, #loadoutChildren do
 		if loadoutChildren[i]:IsA("Frame") and string.find(loadoutChildren[i].Name,"Slot") then
-			loadoutChildren[i].ChildRemoved:connect(function()
+			loadoutChildren[i].ChildRemoved:Connect(function()
 				updateGridActive()
 			end)
-			loadoutChildren[i].ChildAdded:connect(function()
+			loadoutChildren[i].ChildAdded:Connect(function()
 				updateGridActive()
 			end)
 		end
 	end
 
 	pcall(function() closeButton.Modal = true end)
-	closeButton.MouseButton1Click:connect(function() openCloseBackpack() end)
+	closeButton.MouseButton1Click:Connect(function() openCloseBackpack() end)
 
-	searchButton.MouseButton1Click:connect(function() showSearchGear() end)
-	resetButton.MouseButton1Click:connect(function() showEntireGrid() end)
+	searchButton.MouseButton1Click:Connect(function() showSearchGear() end)
+	resetButton.MouseButton1Click:Connect(function() showEntireGrid() end)
 	------------------------- End Lifelong Connections -----------------------
 
 	resize()
@@ -927,7 +933,7 @@ return function()
 		setupCharacterConnections()
 	end
 	if not backpackAddCon then
-		backpackAddCon = game.Players.LocalPlayer.Backpack.ChildAdded:connect(function(child) addToGrid(child) end)
+		backpackAddCon = game.Players.LocalPlayer.Backpack.ChildAdded:Connect(function(child) addToGrid(child) end)
 	end
 
 	-- flip it on if we are good

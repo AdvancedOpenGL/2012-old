@@ -1,3 +1,10 @@
+--!native
+--!optimize 2
+--!strict
+local wait = task.wait
+local spawn = task.spawn
+local delay = task.delay
+
 local t = {}
 
 -- Do a line/plane intersection.  The line starts at the camera.  The plane is at y == 0, normal(0, 1, 0)
