@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 --[[
 	// FileName: ControlScript.lua
 	// Version 1.0

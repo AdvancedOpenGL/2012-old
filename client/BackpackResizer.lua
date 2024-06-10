@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 return function()
 	--if game.CoreGui.Version < 3 then return end -- peace out if we aren't using the right client
 

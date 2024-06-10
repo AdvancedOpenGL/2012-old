@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 -- Invisicam Version 2.5 (Occlusion Series)
 -- For the latest standalone version see id=183837794
 -- OnlyTwentyCharacters

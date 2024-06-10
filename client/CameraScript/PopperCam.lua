@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 -- PopperCam Version 12
 -- OnlyTwentyCharacters
 

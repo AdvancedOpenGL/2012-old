@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 --[[
 	// FileName: ComputerMovementKeyboardMovement
 	// Version 1.0

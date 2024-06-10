@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 --[[
 	// FileName: Thumbpad
 	// Version 1.0

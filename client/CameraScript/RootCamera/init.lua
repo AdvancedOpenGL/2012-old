@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 local UserInputService = game:GetService('UserInputService')
 local PlayersService = game:GetService('Players')
 

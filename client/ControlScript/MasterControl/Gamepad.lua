@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 --[[
 	// FileName: Gamepad
 	// Written by: jeditkacheff

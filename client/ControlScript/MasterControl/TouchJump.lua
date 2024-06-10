@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 --[[
 	// FileName: TouchJump
 	// Version 1.0

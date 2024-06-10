@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 return function()
     local function waitForChild(instance, name)
         while not instance:FindFirstChild(name) do

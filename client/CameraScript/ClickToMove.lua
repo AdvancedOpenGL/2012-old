@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 -- Written By Kip Turner, Copyright Roblox 2014
 
 

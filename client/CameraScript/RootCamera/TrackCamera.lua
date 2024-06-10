@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 local PlayersService = game:GetService('Players')
 local RootCameraCreator = require(script.Parent)
 

@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 function waitForChild(parent, childName)
 	local child = parent:FindFirstChild(childName)
 	if child then return child end

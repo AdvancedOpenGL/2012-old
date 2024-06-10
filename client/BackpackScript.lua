@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 return function()
 	-- peace out if we aren't using the right client
 

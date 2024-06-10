@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 --[[
 	// FileName: ShiftLockController
 	// Written by: jmargh
@@ -39,7 +41,8 @@ local function isShiftLockMode()
 	return LocalPlayer.DevEnableMouseLock and GameSettings.ControlMode == Enum.ControlMode.MouseLockSwitch and
 			LocalPlayer.DevComputerMovementMode ~= Enum.DevComputerMovementMode.ClickToMove and
 			GameSettings.ComputerMovementMode ~= Enum.ComputerMovementMode.ClickToMove and
-			LocalPlayer.DevComputerMovementMode ~= Enum.DevComputerMovementMode.Scriptable
+			LocalPlayer.DevComputerMovementMode ~= Enum.DevComputerMovementMode.Scriptable and
+			UserInputService.KeyboardEnabled and UserInputService.MouseEnabled
 end
 
 if not UserInputService.TouchEnabled then	-- TODO: Remove when safe on mobile
@@ -143,7 +146,7 @@ end)]]
 -- NOTE: This will fire for ControlMode when the settings menu is closed. If ControlMode is
 -- MouseLockSwitch on settings close, it will change the mode to Classic, then to ShiftLockSwitch.
 -- This is a silly hack, but needed to raise an event when the settings menu closes.
-GameSettings.Changed:connect(function(property)
+GameSettings.Changed:Connect(function(property)
 	if property == 'ControlMode' then
 		if GameSettings.ControlMode == Enum.ControlMode.MouseLockSwitch then
 			enableShiftLock()
@@ -158,7 +161,7 @@ GameSettings.Changed:connect(function(property)
 		end
 	end
 end)
-LocalPlayer.Changed:connect(function(property)
+LocalPlayer.Changed:Connect(function(property)
 	if property == 'DevEnableMouseLock' then
 		if LocalPlayer.DevEnableMouseLock then
 			enableShiftLock()
@@ -176,7 +179,7 @@ LocalPlayer.Changed:connect(function(property)
 	end
 end)
 
-LocalPlayer.CharacterAdded:connect(function(character)
+LocalPlayer.CharacterAdded:Connect(function(character)
 	-- we need to recreate guis on character load
 	if true then--not UserInputService.TouchEnabled then
 		initialize()
@@ -190,7 +193,7 @@ end)
 	initialize()
 	if isShiftLockMode() then
 		--ContextActionService:BindActionToInputTypes("ToggleShiftLock", mouseLockSwitchFunc, false, Enum.KeyCode.LeftShift, Enum.KeyCode.RightShift)
-		InputCn = UserInputService.InputBegan:connect(onShiftInputBegan)
+		InputCn = UserInputService.InputBegan:Connect(onShiftInputBegan)
 		IsActionBound = true
 	end
 end

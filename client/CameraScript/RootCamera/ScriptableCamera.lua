@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 local RootCameraCreator = require(script.Parent)
 
 local function CreateScriptableCamera()

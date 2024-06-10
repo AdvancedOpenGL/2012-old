@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 local function characterAdded(char)
 	-- util
 

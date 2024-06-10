@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 local HealthGUI_prototype = Instance.new("ScreenGui")
 HealthGUI_prototype.Name = "HealthGUI"
 HealthGUI_prototype.ResetOnSpawn = false

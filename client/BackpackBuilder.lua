@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 return function()
 	--- ATTENTION!!! There are site-specific ids at the end of this script!!!!!!!!!!!!!!!!!!!!
 

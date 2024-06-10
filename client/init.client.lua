@@ -2,20 +2,43 @@
 --!optimize 2
 --!strict
 --Made by AdvancedOpenGL
-game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All,false)
+local StarterGUI = game:GetService("StarterGui")
+local ContextActionService = game:GetService("ContextActionService")
+StarterGUI:SetCoreGuiEnabled(Enum.CoreGuiType.All,false)
+
 local RunService = game:GetService("RunService")
 _G.playerReady = false
+local function UnbindAction(a)
+	ContextActionService:UnbindAction(a)
+end
 game.Players.LocalPlayer:WaitForChild("PlayerScripts").DescendantAdded:Connect(function(inst)
+	task.wait()
 	if inst.Name == "RbxCharacterSounds" or inst.Name == "PlayerScriptsLoader" then
-		task.wait()
 		inst:Destroy()
 	elseif inst.Name == "PlayerModule" then
-		task.wait()
 		inst:Destroy()
 		RunService:UnbindFromRenderStep("cameraRenderUpdate")
 		RunService:UnbindFromRenderStep("ControlScriptRenderstep")
+		UnbindAction("FreecamToggle")
+		UnbindAction("EnableKeyboardUINavigation")
+		UnbindAction("ScrollSelectedElement")
 		_G.playerReady = true
 	end
+end)
+game:GetService("UserInputService").ModalEnabled = false
+game.Players.LocalPlayer:WaitForChild("PlayerGui").DescendantAdded:Connect(function(inst)
+	task.wait()
+	if inst.Name == "TouchGui" then
+		inst:Destroy()
+	end
+end)
+task.spawn(function()
+	repeat 
+		local success = pcall(function() 
+			StarterGUI:SetCore("ResetButtonCallback", false) 
+		end)
+		task.wait(1)
+	until success
 end)
 local function waitForChild(instance, name)
 	while not instance:FindFirstChild(name) do

@@ -1,10 +1,12 @@
+--!native
+--!optimize 2
 return function()
     --[[
 	//FileName: ChatScript.LUA 
 	//Written by: Sorcus 
 	//Description: Code for lua side chat on ROBLOX. Supports Scrolling.
 	//NOTE: If you find any bugs or inaccuracies PM Sorcus on ROBLOX or @Canavus on Twitter 
-]]
+	]]
 
 	-- Utility functions + Globals
 	local function WaitForChild(parent, childName)	
